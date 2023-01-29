@@ -1,0 +1,91 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+  font-family: 'Poppins', sans-serif;
+}
+.css-ypiqx9-MuiDialogContent-root{
+  overflow-y: inherit !important;
+}
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  overflow-y: inherit !important;
+
+}
+.mainSearchInput {
+  background: #fafafa;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+}
+.counterBox {
+  background: #d1aa96;
+  box-shadow: 0px 4px 4px rgba(244, 234, 228, 0.5);
+  border-radius: 5px;
+  padding: 2rem;
+}
+.numberCounter {
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 16px;
+  /* identical to box height, or 50% */
+  margin-bottom: 3px;
+  color: #5b4a42;
+}
+.TxtCounter {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  /* identical to box height, or 114% */
+  margin-bottom: 0px;
+  color: #ffffff;
+}
+.viewAllvehicle {
+  background: #fcfcfc;
+  border-radius: 4px;
+}
+
+
+
+/* ***************Bellform STYLING*************** */
+
+.form {
+  width: 307px;
+  height: 314px;
+  top: 52px;
+  left: 910px;
+}
+.form h6{
+  color: #D1AA96;
+  font-size: 12px;
+}
+
+.belltext p{
+  font-size: 14px;
+}
+
+.vl {
+  border-left: 3px solid #E2E8F0;
+  height: 30px;
+  padding-bottom: -550px;
+}
+
+.primaryTextcolor {
+  color: #4c4c4c;
+}
+input{
+  outline: none !important;
+}
+
+
+/* file upload css  */
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  display: inline-block;
+  cursor: pointer;
+}
+/* file upload css  */
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+
+  overflow-y: unset !important;
+  
+}

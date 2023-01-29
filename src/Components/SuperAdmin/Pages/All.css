@@ -1,0 +1,52 @@
+#dropdown-basic::after{
+    display: none !important; 
+   
+ }
+
+.dropdown{
+    display: flex;
+    justify-content: center;
+}
+.dropdown-menu-item:active{
+    color: black ;
+    text-decoration: none;
+    background-color: lightgray;
+}
+
+.backButton:hover{
+    cursor: pointer;
+}
+
+/* Settings  */
+.SettingUserButtons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #D1AA96;
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+}
+.imgUsers{
+    margin-right: 5px;
+}   
+
+/* Ripple effect */
+.SettingUserButtons {
+    background-position: center;
+    transition: background 0.8s;
+  }
+  .SettingUserButtons:hover {
+    background:  radial-gradient(circle, transparent 1%, #D1AA96 1%) center/15000%;
+  }
+  .SettingUserButtons:active {
+    background-color: #D1AA96;
+    background-size: 100%;
+    transition: background 0s;
+  }
+
+
+  /* Add Question Modal */
+  .questionAnswer{
+    /* width: 600px; */
+  }

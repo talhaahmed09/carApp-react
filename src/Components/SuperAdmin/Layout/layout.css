@@ -1,0 +1,24 @@
+.sidebarButtons{
+    width: 100%;
+    /* background-color: red; */
+    /* margin: 10px; */
+    padding: 15px;
+    color: #5A4A42;
+
+
+}
+.sidebarButtons button{
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+}
+.sidebarButtons:hover{
+    background-color: #F4EAE4;
+    border-right: 3px solid #5A4A42;
+}
+
+.active{
+    background-color: #F4EAE4;
+    border-right: 3px solid #5A4A42;
+}

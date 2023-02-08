@@ -291,7 +291,7 @@ export const Createcompany = (props) => {
                 <TextField 
                  defaultValue={  props.editItem == undefined ? homepage : props.editItem.homepage  }
                  onChange={(e) => setHomepage(e.target.value)}
-                fullWidth label="http:/" id="0317258963" />
+                fullWidth label="http://" id="0317258963" />
               </div>
             </div>
           </div>

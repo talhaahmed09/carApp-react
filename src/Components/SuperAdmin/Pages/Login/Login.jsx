@@ -42,7 +42,6 @@ const Login = () => {
         if (err.response.status === 401) {
           setMsg("Unauthorized");
         setLoading(false);
-
         }
       });
   };

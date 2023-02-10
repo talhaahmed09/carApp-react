@@ -7,38 +7,70 @@ import AuthUser from "../../Auth/AuthUser";
 import WestIcon from "@mui/icons-material/West";
 import "../All.css";
 import { toast } from "react-toastify";
-import { useFormik } from "formik";
+import { useFormik, setFieldTouched  } from "formik";
+import * as Yup from "yup";
 
 export const Createcompany = (props) => {
   const { http } = AuthUser();
 
   const [companyCheck, setCompanyCheck] = useState(false);
+  const initialValues = {
+    name: "",
+    director: "",
+    person: "",
+    register: "",
+    taxNumber: "",
+    email: "",
+    homepage: "",
+    phone: "",
+    mobile: "",
+    fax: "",
+    country: "",
+    zipCity: "",
+    streetNo: "",
+  };
+  const isValidUrl = (value) => {
+    try {
+      new URL(value);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+  const formValidationSchema = Yup.object().shape({
+    name: Yup.string().required("Company Name is required"),
+    managingDirector: Yup.string().required("Managing Director is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    telephoneNumber: Yup.string().required("Telephone Number is required"),
+    country: Yup.string().required("Country is required"),
+    zip: Yup.string().required("Zip is required"),
+    city: Yup.string().required("City is required"),
+    street: Yup.string().required("Street is required"),
+    homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
+  });
 
-  // Fields States
-  // const [name, setName] = useState("");
-  // const [director, setDirector] = useState("");
-  // const [person, setPerson] = useState("");
-  // const [taxNumber, setTaxNumber] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [phone, setPhone] = useState("");
-  // const [mobile, setMobile] = useState("");
-  // const [fax, setFax] = useState("");
-  // const [country, setCountry] = useState("");
-  // const [zipCity, setZipCity] = useState("");
-  // const [streetNo, setStreetNo] = useState("");
-  // const [mailbox, setMailbox] = useState("");
-
-  // const [register, setRegister] = useState("");
-  // const [homepage, setHomepage] = useState("");
+  const { values, handleChange, setFieldTouched, setTouched, isValid, handleBlur, touched, errors } =
+    useFormik({
+      initialValues: initialValues,
+      validationSchema: formValidationSchema,
+    });
 
   // Handle Cancel Button
-
-  const handleCancel = () => {
-    setCompanyCheck(!companyCheck);
-  };
-
-  // Handle Create company
   const handleSave = () => {
+    // if(!Object.keys(touched).length){
+    //   Object.keys(errors).forEach((field) => {
+    //     setFieldTouched(field, true, false);
+    //   });
+    //   return console.log(touched)
+    // }
+    setTouched({ ...Object.keys(initialValues).reduce((acc, key) => ({ ...acc, [key]: true }), {}) });
+    if (!isValid) {
+      console.log(touched);
+      return console.log("Hello dumb mf");
+    }
+    console.log(values, touched);
     // const formData = new FormData();
     // formData.append("name", name);
     // formData.append("director", director);
@@ -62,23 +94,12 @@ export const Createcompany = (props) => {
     //   })
     //   .catch((err) => toast.error(err.message));
   };
-  const { values, handleChange } = useFormik({
-    initialValues: {
-      name: "",
-      director: "",
-      person: "",
-      taxNumber: "",
-      email: "",
-      phone: "",
-      fax: "",
-      country: "",
-      zipCity: "",
-      streetNo: "",
-      register: "",
-      homepage: "",
-    },
-    handleSave,
-  });
+  const handleCancel = () => {
+    setCompanyCheck(!companyCheck);
+  };
+
+  // Handle Create company
+
   // Handle Edit Company
   const handleEditCompany = () => {
     // console.log("Props: ", props.editItem);
@@ -198,14 +219,16 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? name : props.editItem.name
-                  // }
-                  defaultValue={values.name}
+                  id="name"
+                  name="name"
+                  value={values.name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   fullWidth
-                  label="Company name"
-                  id="0317258963"
+                  required
+                  error={Boolean(touched.name && errors.name)}
+                  helperText={touched.name && errors.name}
+                  label="Enter Company Name"
                 />
               </div>
             </div>
@@ -217,16 +240,16 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? director
-                  //     : props.editItem.director
-                  // }
+                  id="director"
+                  name="director"
+                  value={values.director}
                   onChange={handleChange}
-                  defaultValue={values.director}
+                  onBlur={handleBlur}
                   fullWidth
+                  required
+                  error={Boolean(touched.director && errors.director)}
+                  helperText={touched.director && errors.director}
                   label="Enter your position"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -240,14 +263,13 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? person : props.editItem.person
-                  // }
+                  value={values.person}
                   onChange={handleChange}
-                  defaultValue={values.person}
+                  onBlur={handleBlur}
                   fullWidth
                   label="Enter your name"
-                  id="0317258963"
+                  id="person"
+                  name="person"
                 />
               </div>
             </div>
@@ -259,16 +281,13 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? register
-                  //     : props.editItem.register
-                  // }
+                  id="register"
+                  name="register"
+                  value={values.register}
                   onChange={handleChange}
-                  defaultValue={values.register}
+                  onBlur={handleBlur}
                   fullWidth
                   label="Enter your text"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -280,16 +299,13 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? taxNumber
-                  //     : props.editItem.tax_number
-                  // }
+                  id="taxNumber"
+                  name="taxNumber"
+                  value={values.taxNumber}
                   onChange={handleChange}
-                  defaultValue={values.taxNumber}
+                  onBlur={handleBlur}
                   fullWidth
-                  label="Enter your tax"
-                  id="0317258963"
+                  label="Enter your tax no"
                 />
               </div>
             </div>
@@ -305,14 +321,15 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>E-mail</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? email : props.editItem.email
-                  // }
-                  onChange={handleChange}
-                  defaultValue={values.email}
                   fullWidth
-                  label="Enter email"
-                  id="0317258963"
+                  id="email"
+                  name="email"
+                  label="Email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
                 />
               </div>
             </div>
@@ -322,16 +339,13 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Homepage</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? homepage
-                  //     : props.editItem.homepage
-                  // }
+                  id="homepage"
+                  name="homepage"
+                  value={values.homepage}
                   onChange={handleChange}
-                  defaultValue={values.homepage}
+                  onBlur={handleBlur}
                   fullWidth
                   label="http://"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -345,14 +359,16 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? phone : props.editItem.phone
-                  // }
+                  id="phone"
+                  name="phone"
+                  value={values.phone}
                   onChange={handleChange}
-                  defaultValue={values.phone}
+                  onBlur={handleBlur}
                   fullWidth
+                  required
+                  error={Boolean(touched.phone && errors.phone)}
+                  helperText={touched.phone && errors.phone}
                   label="0317258963"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -362,14 +378,13 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? mobile : props.editItem.mobile
-                  // }
+                  id="mobile"
+                  name="mobile"
+                  value={values.mobile}
                   onChange={handleChange}
-                  defaultValue={values.mobile}
+                  onBlur={handleBlur}
                   fullWidth
                   label="Enter Mobile number"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -379,14 +394,13 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? fax : props.editItem.fax
-                  // }
+                  id="fax"
+                  name="fax"
+                  value={values.fax}
                   onChange={handleChange}
-                  defaultValue={values.fax}
+                  onBlur={handleBlur}
                   fullWidth
                   label="Enter Fax"
-                  id="0317258963"
                 />
               </div>
             </div>
@@ -402,16 +416,16 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? country
-                  //     : props.editItem.country
-                  // }
+                  id="country"
+                  name="country"
+                  value={values.country}
                   onChange={handleChange}
-                  defaultValue={values.country}
+                  onBlur={handleBlur}
                   fullWidth
+                  required
+                  error={Boolean(touched.country && errors.country)}
+                  helperText={touched.country && errors.country}
                   label="Country name"
-                  id="Country name"
                 />
               </div>
             </div>
@@ -423,14 +437,16 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined ? zipCity : props.editItem.city
-                  // }
+                  id="zipCity"
+                  name="zipCity"
+                  value={values.zipCity}
                   onChange={handleChange}
-                  defaultValue={values.zipCity}
+                  onBlur={handleBlur}
                   fullWidth
+                  required
+                  error={Boolean(touched.zipCity && errors.zipCity)}
+                  helperText={touched.zipCity && errors.zipCity}
                   label="City"
-                  id="City"
                 />
               </div>
             </div>
@@ -444,16 +460,16 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? streetNo
-                  //     : props.editItem.street_no
-                  // }
+                  id="streetNo"
+                  name="streetNo"
+                  value={values.streetNo}
                   onChange={handleChange}
-                  defaultValue={values.streetNo}
+                  onBlur={handleBlur}
                   fullWidth
-                  label="Street No*"
-                  id="Street No*"
+                  required
+                  error={Boolean(touched.streetNo && errors.streetNo)}
+                  helperText={touched.streetNo && errors.streetNo}
+                  label="Street No"
                 />
               </div>
             </div>
@@ -463,16 +479,15 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mailbox</p>
 
                 <TextField
-                  // defaultdefaultValue={
-                  //   props.editItem == undefined
-                  //     ? mailbox
-                  //     : props.editItem.mailbox
-                  // }
+                  id="mailbox"
+                  name="mailbox"
+                  value={values.mailbox}
                   onChange={handleChange}
-                  defaultValue={values.mailbox}
+                  onBlur={handleBlur}
                   fullWidth
+                  error={Boolean(touched.mailbox && errors.mailbox)}
+                  helperText={touched.mailbox && errors.mailbox}
                   label="Enter your mail box"
-                  id="Enter your mail box"
                 />
               </div>
             </div>

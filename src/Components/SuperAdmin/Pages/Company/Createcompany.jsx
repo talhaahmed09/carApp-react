@@ -1,5 +1,11 @@
-import { TextField } from "@mui/material";
-import React, { useState } from "react";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { Company } from "./Company";
 import { Toolbar } from "@mui/material";
@@ -7,11 +13,45 @@ import AuthUser from "../../Auth/AuthUser";
 import WestIcon from "@mui/icons-material/West";
 import "../All.css";
 import { toast } from "react-toastify";
-import { useFormik, setFieldTouched  } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
+import { matchIsValidTel, MuiTelInput } from "mui-tel-input";
+import counteries from "i18n-iso-countries";
+import enLocale from "i18n-iso-countries/langs/en.json";
 
 export const Createcompany = (props) => {
   const { http } = AuthUser();
+
+  counteries.registerLocale(enLocale);
+
+  const counteriesObj = counteries.getNames("en", { select: "official" });
+  const counteriesArr = Object.entries(counteriesObj).map(([key, value]) => {
+    return { label: value, key: key };
+  });
+
+  useEffect(() => {
+    console.log(props);
+    if (typeof props.editItem !== "undefined") {
+      setValues({
+        name: props.editItem.name,
+        director: props.editItem.director,
+        person: props.editItem.person,
+        register: props.editItem.register,
+        taxNumber: props.editItem.taxNumber,
+        email: props.editItem.email,
+        homepage: props.editItem.homepage,
+        phone: props.editItem.phone,
+        mobile: props.editItem.mobile,
+        fax: props.editItem.fax,
+        country: props.editItem.country,
+        zipCity: props.editItem.zipCity,
+        streetNo: props.editItem.streetNo,
+      });
+    } else {
+      console.log("My prop is not present");
+      console.log(counteriesArr);
+    }
+  }, [props]);
 
   const [companyCheck, setCompanyCheck] = useState(false);
   const initialValues = {
@@ -51,11 +91,20 @@ export const Createcompany = (props) => {
     homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
   });
 
-  const { values, handleChange, setFieldTouched, setTouched, isValid, handleBlur, touched, errors } =
-    useFormik({
-      initialValues: initialValues,
-      validationSchema: formValidationSchema,
-    });
+  const {
+    values,
+    handleChange,
+    setFieldValue,
+    setTouched,
+    isValid,
+    handleBlur,
+    touched,
+    setValues,
+    errors,
+  } = useFormik({
+    initialValues: initialValues,
+    validationSchema: formValidationSchema,
+  });
 
   // Handle Cancel Button
   const handleSave = () => {
@@ -65,9 +114,14 @@ export const Createcompany = (props) => {
     //   });
     //   return console.log(touched)
     // }
-    setTouched({ ...Object.keys(initialValues).reduce((acc, key) => ({ ...acc, [key]: true }), {}) });
+    setTouched({
+      ...Object.keys(initialValues).reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      ),
+    });
     if (!isValid) {
-      console.log(touched);
+      console.log(values);
       return console.log("Hello dumb mf");
     }
     console.log(values, touched);
@@ -357,18 +411,22 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                   Telephone
                 </p>
-
-                <TextField
+                <MuiTelInput
+                  defaultCountry="DE"
                   id="phone"
                   name="phone"
                   value={values.phone}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setFieldValue("phone", e);
+                    matchIsValidTel(e);
+                  }}
                   onBlur={handleBlur}
                   fullWidth
                   required
                   error={Boolean(touched.phone && errors.phone)}
                   helperText={touched.phone && errors.phone}
-                  label="0317258963"
+                  label="Telephone"
+                  inputProps={{ maxLength: 13 }}
                 />
               </div>
             </div>
@@ -376,15 +434,22 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="Homepage">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
-
-                <TextField
+                <MuiTelInput
+                  defaultCountry="DE"
                   id="mobile"
                   name="mobile"
                   value={values.mobile}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setFieldValue("mobile", e);
+                    matchIsValidTel(e);
+                  }}
                   onBlur={handleBlur}
                   fullWidth
-                  label="Enter Mobile number"
+                  required
+                  error={Boolean(touched.mobile && errors.mobile)}
+                  helperText={touched.mobile && errors.mobile}
+                  label="Mobile"
+                  inputProps={{ maxLength: 13 }}
                 />
               </div>
             </div>
@@ -414,19 +479,30 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="country">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country</p>
-
-                <TextField
-                  id="country"
-                  name="country"
-                  value={values.country}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  required
-                  error={Boolean(touched.country && errors.country)}
-                  helperText={touched.country && errors.country}
-                  label="Country name"
-                />
+                <FormControl fullWidth>
+                  <InputLabel id="country">Country *</InputLabel>
+                  <Select
+                    id="country"
+                    name="country"
+                    labelId="country"
+                    value={values.country}
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      setFieldValue("country", e.target.value);
+                    }}
+                    label="Country"
+                    required
+                    error={Boolean(touched.country && errors.country)}
+                    helperText={touched.country && errors.country}
+                  >
+                    {!!counteriesArr?.length &&
+                      counteriesArr.map(({ label, value }) => (
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
               </div>
             </div>
 

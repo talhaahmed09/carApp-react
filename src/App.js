@@ -25,6 +25,8 @@ function App() {
         <Route path="/dashboard" element={<Dashbaord />} />
         <Route path="/address" render={() => <Addresses />} />
         <Route path="/companylist" element={<Companylist />} />
+        <Route exact path="/companies/create" element={<Createcompany />} />
+        <Route exact path="/companies/edit/:id" element={<Createcompany />} />
         <Route path="/vehicles" element={<Vehicles />} />
         <Route path="/" element={<Login />} />
         <Route path="/forgot" element={<Forgotpas />} />

@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
@@ -78,8 +77,6 @@ function Dashbaord(props) {
   const handleChangeLanguage = (event) => {
     setChecked(event.target.checked);
   };
-
-
 
   // tabs
   function TabPanel(props) {
@@ -254,8 +251,9 @@ function Dashbaord(props) {
               {/* language swicher */}
               <FormGroup>
                 <FormControlLabel
-                  control={<Switch onChange={handleChangeLanguage} checked={checked}
-                  />}
+                  control={
+                    <Switch onChange={handleChangeLanguage} checked={checked} />
+                  }
                   label="German"
                   style={{ color: "black" }}
                 />
@@ -362,7 +360,7 @@ function Dashbaord(props) {
             <Fdm />
           </TabPanel>
           <TabPanel value={valueTab} index={5}>
-            <Addresses/>
+            <Addresses />
           </TabPanel>
           <TabPanel value={valueTab} index={6}>
             <SettingsRoot />
@@ -382,4 +380,3 @@ Dashbaord.propTypes = {
 };
 
 export default Dashbaord;
-

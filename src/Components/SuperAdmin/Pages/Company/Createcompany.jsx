@@ -138,77 +138,13 @@ export const Createcompany = (props) => {
 
   // Handle Edit Company
   const handleEditCompany = () => {
-    // console.log("Props: ", props.editItem);
-    // const formData = new FormData();
-    // {
-    //   name != ""
-    //     ? formData.append("name", name)
-    //     : formData.append("name", props.editItem.name);
-    // }
-    // {
-    //   director != ""
-    //     ? formData.append("director", director)
-    //     : formData.append("director", props.editItem.director);
-    // }
-    // {
-    //   person != ""
-    //     ? formData.append("person", person)
-    //     : formData.append("person", props.editItem.person);
-    // }
-    // {
-    //   taxNumber != ""
-    //     ? formData.append("tax_number", taxNumber)
-    //     : formData.append("tax_number", props.editItem.tax_number);
-    // }
-    // {
-    //   email != ""
-    //     ? formData.append("email", email)
-    //     : formData.append("email", props.editItem.email);
-    // }
-    // {
-    //   phone != ""
-    //     ? formData.append("phone", phone)
-    //     : formData.append("phone", props.editItem.phone);
-    // }
-    // {
-    //   mobile != ""
-    //     ? formData.append("mobile", mobile)
-    //     : formData.append("mobile", props.editItem.mobile);
-    // }
-    // {
-    //   fax != ""
-    //     ? formData.append("fax", fax)
-    //     : formData.append("fax", props.editItem.fax);
-    // }
-    // {
-    //   country != ""
-    //     ? formData.append("country", country)
-    //     : formData.append("country", props.editItem.country);
-    // }
-    // {
-    //   zipCity != ""
-    //     ? formData.append("city", zipCity)
-    //     : formData.append("city", props.editItem.city);
-    // }
-    // {
-    //   streetNo != ""
-    //     ? formData.append("street_no", streetNo)
-    //     : formData.append("street_no", props.editItem.street_no);
-    // }
-    // {
-    //   mailbox != ""
-    //     ? formData.append("mailbox", mailbox)
-    //     : formData.append("mailbox", props.editItem.mailbox);
-    // }
-    // formData.append("_method", "PUT");
-    // formData.append("register", props.editItem.register);
-    // http
-    //   .post(`company/${props.editItem.id}`, formData)
-    //   .then((res) => {
-    //     toast.success("update successfully");
-    //     setCompanyCheck(!companyCheck);
-    //   })
-    //   .catch((err) => toast.error(err.message));
+    http
+      .post(`company/${props.editItem.id}`, values)
+      .then((res) => {
+        toast.success("update successfully");
+        setCompanyCheck(!companyCheck);
+      })
+      .catch((err) => toast.error(err.message));
   };
 
   return (

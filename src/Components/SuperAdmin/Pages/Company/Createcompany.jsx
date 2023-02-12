@@ -2,6 +2,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  NativeSelect,
   Select,
   TextField,
 } from "@mui/material";
@@ -105,6 +106,8 @@ export const Createcompany = (props) => {
     initialValues: initialValues,
     validationSchema: formValidationSchema,
   });
+
+  useEffect(() => {}, [values.country]);
 
   // Handle Cancel Button
   const handleSave = () => {
@@ -479,30 +482,27 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="country">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country</p>
-                <FormControl fullWidth>
-                  <InputLabel id="country">Country *</InputLabel>
-                  <Select
-                    id="country"
-                    name="country"
-                    labelId="country"
-                    value={values.country}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      setFieldValue("country", e.target.value);
-                    }}
-                    label="Country"
-                    required
-                    error={Boolean(touched.country && errors.country)}
-                    helperText={touched.country && errors.country}
-                  >
-                    {!!counteriesArr?.length &&
-                      counteriesArr.map(({ label, value }) => (
-                        <MenuItem key={value} value={value}>
-                          {label}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
+                <select
+                  id="country"
+                  name="country"
+                  labelId="country"
+                  value={values.country}
+                  onChange={(e) => {
+                    setFieldValue("country", e.target.vale);
+                  }}
+                  label="Country"
+                  className="form-select form-select-lg mb-0 w-100"
+                  required
+                  error={Boolean(touched.country && errors.country)}
+                  helperText={touched.country && errors.country}
+                >
+                  {!!counteriesArr?.length &&
+                    counteriesArr.map(({ label, value }) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                </select>
               </div>
             </div>
 

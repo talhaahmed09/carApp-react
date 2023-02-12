@@ -1,11 +1,4 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  NativeSelect,
-  Select,
-  TextField,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { Company } from "./Company";
@@ -17,17 +10,26 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { matchIsValidTel, MuiTelInput } from "mui-tel-input";
-import counteries from "i18n-iso-countries";
-import enLocale from "i18n-iso-countries/langs/en.json";
+import { Country, City } from "country-state-city";
+import { useMemo } from "react";
+
+const countriesObj = Country.getAllCountries();
+const getCities = (countryName) => {
+  const code = countriesObj.find((item) => {
+    return item.name === countryName;
+  }).isoCode;
+  console.log("called");
+  const cities = City.getCitiesOfCountry(code);
+  return cities.map((city) => {
+    return { label: city.name, value: city.name };
+  });
+};
 
 export const Createcompany = (props) => {
   const { http } = AuthUser();
 
-  counteries.registerLocale(enLocale);
-
-  const counteriesObj = counteries.getNames("en", { select: "official" });
-  const counteriesArr = Object.entries(counteriesObj).map(([key, value]) => {
-    return { label: value, key: key };
+  const countriesArr = countriesObj.map((country) => {
+    return { label: country.name, value: country.name };
   });
 
   useEffect(() => {
@@ -50,7 +52,6 @@ export const Createcompany = (props) => {
       });
     } else {
       console.log("My prop is not present");
-      console.log(counteriesArr);
     }
   }, [props]);
 
@@ -66,7 +67,7 @@ export const Createcompany = (props) => {
     phone: "",
     mobile: "",
     fax: "",
-    country: "",
+    country: "Germany",
     zipCity: "",
     streetNo: "",
   };
@@ -107,16 +108,9 @@ export const Createcompany = (props) => {
     validationSchema: formValidationSchema,
   });
 
-  useEffect(() => {}, [values.country]);
-
+  const cities = useMemo(() => getCities(values.country), [values.country]);
   // Handle Cancel Button
   const handleSave = () => {
-    // if(!Object.keys(touched).length){
-    //   Object.keys(errors).forEach((field) => {
-    //     setFieldTouched(field, true, false);
-    //   });
-    //   return console.log(touched)
-    // }
     setTouched({
       ...Object.keys(initialValues).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
@@ -128,28 +122,13 @@ export const Createcompany = (props) => {
       return console.log("Hello dumb mf");
     }
     console.log(values, touched);
-    // const formData = new FormData();
-    // formData.append("name", name);
-    // formData.append("director", director);
-    // formData.append("person", person);
-    // formData.append("tax_number", taxNumber);
-    // formData.append("email", email);
-    // formData.append("phone", phone);
-    // formData.append("mobile", mobile);
-    // formData.append("fax", fax);
-    // formData.append("country", country);
-    // formData.append("city", zipCity);
-    // formData.append("street_no", streetNo);
-    // formData.append("mailbox", mailbox);
-    // formData.append("register", register);
-    // formData.append("homepage", homepage);
-    // http
-    //   .post(`/company`, formData)
-    //   .then((res) => {
-    //     toast.success("create sucessfully");
-    //     setCompanyCheck(!companyCheck);
-    //   })
-    //   .catch((err) => toast.error(err.message));
+    http
+      .post(`/company`, values)
+      .then((res) => {
+        toast.success("create sucessfully");
+        setCompanyCheck(!companyCheck);
+      })
+      .catch((err) => toast.error(err.message));
   };
   const handleCancel = () => {
     setCompanyCheck(!companyCheck);
@@ -488,7 +467,7 @@ export const Createcompany = (props) => {
                   labelId="country"
                   value={values.country}
                   onChange={(e) => {
-                    setFieldValue("country", e.target.vale);
+                    setFieldValue("country", e.target.value);
                   }}
                   label="Country"
                   className="form-select form-select-lg mb-0 w-100"
@@ -496,8 +475,8 @@ export const Createcompany = (props) => {
                   error={Boolean(touched.country && errors.country)}
                   helperText={touched.country && errors.country}
                 >
-                  {!!counteriesArr?.length &&
-                    counteriesArr.map(({ label, value }) => (
+                  {!!countriesArr?.length &&
+                    countriesArr.map(({ label, value }) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
@@ -508,22 +487,27 @@ export const Createcompany = (props) => {
 
             <div className="col-lg-6">
               <div className="ZIP / City">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  ZIP / City
-                </p>
-
-                <TextField
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
+                <select
                   id="zipCity"
                   name="zipCity"
+                  labelId="zipCity"
                   value={values.zipCity}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
+                  onChange={(e) => {
+                    setFieldValue("zipCity", e.target.value);
+                  }}
+                  label="Country"
                   required
-                  error={Boolean(touched.zipCity && errors.zipCity)}
-                  helperText={touched.zipCity && errors.zipCity}
-                  label="City"
-                />
+                  className="form-select form-select-lg mb-0 w-100"
+                  error={Boolean(touched.country && errors.country)}
+                  helperText={touched.country && errors.country}
+                >
+                  {cities.map(({ label, value }, id) => (
+                    <option key={id} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { OutlinedInput, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { Company } from "./Company";
@@ -24,6 +24,28 @@ const getCities = (countryName) => {
     return { label: city.name, value: city.name };
   });
 };
+const isValidUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const formValidationSchema = Yup.object().shape({
+  name: Yup.string().required("Company Name is required"),
+  director: Yup.string().required("Managing Director is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  phone: Yup.string().required("Telephone Number is required"),
+  country: Yup.string().required("Country is required"),
+  city: Yup.string().required("City is required"),
+  // city: Yup.string().required("City is required"),
+  street_no: Yup.string().required("Street is required"),
+  homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
+});
 
 export const Createcompany = (props) => {
   const { http } = AuthUser();
@@ -40,15 +62,15 @@ export const Createcompany = (props) => {
         director: props.editItem.director,
         person: props.editItem.person,
         register: props.editItem.register,
-        taxNumber: props.editItem.taxNumber,
+        tax_number: props.editItem.taxNumber,
         email: props.editItem.email,
         homepage: props.editItem.homepage,
         phone: props.editItem.phone,
         mobile: props.editItem.mobile,
         fax: props.editItem.fax,
         country: props.editItem.country,
-        zipCity: props.editItem.zipCity,
-        streetNo: props.editItem.streetNo,
+        city: props.editItem.zipCity,
+        street_no: props.editItem.streetNo,
       });
     } else {
       console.log("My prop is not present");
@@ -61,37 +83,16 @@ export const Createcompany = (props) => {
     director: "",
     person: "",
     register: "",
-    taxNumber: "",
+    tax_number: "",
     email: "",
     homepage: "",
     phone: "",
     mobile: "",
     fax: "",
     country: "Germany",
-    zipCity: "",
-    streetNo: "",
+    city: "",
+    street_no: "",
   };
-  const isValidUrl = (value) => {
-    try {
-      new URL(value);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-  const formValidationSchema = Yup.object().shape({
-    name: Yup.string().required("Company Name is required"),
-    managingDirector: Yup.string().required("Managing Director is required"),
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    telephoneNumber: Yup.string().required("Telephone Number is required"),
-    country: Yup.string().required("Country is required"),
-    zip: Yup.string().required("Zip is required"),
-    city: Yup.string().required("City is required"),
-    street: Yup.string().required("Street is required"),
-    homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
-  });
 
   const {
     values,
@@ -187,17 +188,17 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="company">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Company Name
+                  Company Name *
                 </p>
 
                 <TextField
+                  required
                   id="name"
                   name="name"
                   value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   fullWidth
-                  required
                   error={Boolean(touched.name && errors.name)}
                   helperText={touched.name && errors.name}
                   label="Enter Company Name"
@@ -208,17 +209,17 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="managing">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Managing Director
+                  Managing Director *
                 </p>
 
                 <TextField
+                  required
                   id="director"
                   name="director"
                   value={values.director}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   fullWidth
-                  required
                   error={Boolean(touched.director && errors.director)}
                   helperText={touched.director && errors.director}
                   label="Enter your position"
@@ -271,9 +272,9 @@ export const Createcompany = (props) => {
                 </p>
 
                 <TextField
-                  id="taxNumber"
-                  name="taxNumber"
-                  value={values.taxNumber}
+                  id="tax_number"
+                  name="tax_number"
+                  value={values.tax_number}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   fullWidth
@@ -290,9 +291,10 @@ export const Createcompany = (props) => {
           <div className="row mt-5">
             <div className="col-lg-6">
               <div className="E-mail">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>E-mail</p>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>E-mail *</p>
 
                 <TextField
+                  required
                   fullWidth
                   id="email"
                   name="email"
@@ -308,7 +310,9 @@ export const Createcompany = (props) => {
 
             <div className="col-lg-6">
               <div className="Homepage">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Homepage</p>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Homepage *
+                </p>
 
                 <TextField
                   id="homepage"
@@ -316,6 +320,8 @@ export const Createcompany = (props) => {
                   value={values.homepage}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  error={touched.homepage && Boolean(errors.homepage)}
+                  helperText={touched.homepage && errors.homepage}
                   fullWidth
                   label="http://"
                 />
@@ -327,10 +333,11 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="Telephone">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Telephone
+                  Telephone *
                 </p>
                 <MuiTelInput
                   defaultCountry="DE"
+                  forceCallingCode
                   id="phone"
                   name="phone"
                   value={values.phone}
@@ -354,6 +361,7 @@ export const Createcompany = (props) => {
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
                 <MuiTelInput
                   defaultCountry="DE"
+                  forceCallingCode
                   id="mobile"
                   name="mobile"
                   value={values.mobile}
@@ -375,15 +383,23 @@ export const Createcompany = (props) => {
             <div className="col-lg-6 mt-5">
               <div className="Homepage">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
-
-                <TextField
+                <MuiTelInput
+                  defaultCountry="DE"
+                  forceCallingCode
                   id="fax"
                   name="fax"
                   value={values.fax}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setFieldValue("fax", e);
+                    matchIsValidTel(e);
+                  }}
                   onBlur={handleBlur}
                   fullWidth
+                  required
+                  error={Boolean(touched.mobile && errors.mobile)}
+                  helperText={touched.mobile && errors.mobile}
                   label="Enter Fax"
+                  inputProps={{ maxLength: 13 }}
                 />
               </div>
             </div>
@@ -396,7 +412,9 @@ export const Createcompany = (props) => {
           <div className="row mt-5">
             <div className="col-lg-6">
               <div className="country">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country</p>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Country *
+                </p>
                 <select
                   id="country"
                   name="country"
@@ -423,20 +441,21 @@ export const Createcompany = (props) => {
 
             <div className="col-lg-6">
               <div className="ZIP / City">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>City *</p>
                 <select
                   id="zipCity"
                   name="zipCity"
                   labelId="zipCity"
-                  value={values.zipCity}
+                  value={values.city}
                   onChange={(e) => {
-                    setFieldValue("zipCity", e.target.value);
+                    setFieldValue("city", e.target.value);
                   }}
-                  label="Country"
+                  label="City"
                   required
+                  input={<OutlinedInput label="Name" />}
                   className="form-select form-select-lg mb-0 w-100"
-                  error={Boolean(touched.country && errors.country)}
-                  helperText={touched.country && errors.country}
+                  error={Boolean(touched.city && errors.city)}
+                  helperText={touched.city && errors.city}
                 >
                   {cities.map(({ label, value }, id) => (
                     <option key={id} value={value}>
@@ -452,19 +471,19 @@ export const Createcompany = (props) => {
             <div className="col-lg-6">
               <div className="Street Number">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Street Number
+                  Street Number *
                 </p>
 
                 <TextField
-                  id="streetNo"
-                  name="streetNo"
-                  value={values.streetNo}
+                  id="street_no"
+                  name="street_no"
+                  value={values.street_no}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   fullWidth
                   required
-                  error={Boolean(touched.streetNo && errors.streetNo)}
-                  helperText={touched.streetNo && errors.streetNo}
+                  error={Boolean(touched.street_no && errors.street_no)}
+                  helperText={touched.street_no && errors.street_no}
                   label="Street No"
                 />
               </div>

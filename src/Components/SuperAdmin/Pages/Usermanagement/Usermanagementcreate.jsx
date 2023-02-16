@@ -1,11 +1,14 @@
 import {
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@mui/material";
 import Usermanagment from "./Usermanagment";
 import { Toolbar } from "@mui/material";
@@ -13,35 +16,133 @@ import AuthUser from "../../Auth/AuthUser";
 import WestIcon from "@mui/icons-material/West";
 import "../All.css";
 import { MuiTelInput } from "mui-tel-input";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { FormLabel } from "react-bootstrap";
+import { Country, City } from "country-state-city";
+
+const countriesObj = Country.getAllCountries();
+
+const getCities = (countryName) => {
+  const code = countriesObj.find((item) => {
+    return item.name === countryName;
+  }).isoCode;
+  console.log("called");
+  const cities = City.getCitiesOfCountry(code);
+  return cities.map((city) => {
+    return { label: city.name, value: city.name };
+  });
+};
+
+const isValidUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const validationSchema = Yup.object().shape({
+  salutation: Yup.string().required("Salutation is required"),
+  title: Yup.string().required("Title is required"),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  password: Yup.string().required("Password is required"),
+  country: Yup.string().required("Country is required"),
+  zip: Yup.string().required("Zip code is required"),
+  city: Yup.string().required("City is required"),
+  street: Yup.string().required("Street address is required"),
+  role: Yup.string().required("Role is required"),
+  companyid: Yup.string().required("Company is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
+});
 
 export const Usermanagementcreate = (props) => {
   const { http } = AuthUser();
   const getToken = AuthUser();
+
+  const countriesArr = countriesObj.map((country) => {
+    return { label: country.name, value: country.name };
+  });
+
+  const cities = useMemo(() => getCities(values.country), [values.country]);
+
+  const initialValues = {
+    salutation: "",
+    title: "",
+    firstName: "",
+    lastName: "",
+    birthday: "",
+    password: "",
+    active: false,
+    email: "",
+    role: "",
+    telephone: "",
+    mobile: "",
+    fax: "",
+    country: "",
+    zip: "",
+    mailbox: "",
+    city: "",
+    street: "",
+    design: "",
+    letterhead: "",
+    letterfoot: "",
+    siteProfile: "",
+    postalSender: "",
+    senderAddress: "",
+    senderName: "",
+    contactDetails: "",
+    signature: "",
+    rubberStamp: "",
+    smtpServer: "",
+    smtpPort: "",
+    username: "",
+  };
+
+  const {
+    values,
+    handleChange,
+    setFieldValue,
+    setTouched,
+    isValid,
+    handleBlur,
+    touched,
+    setValues,
+    errors,
+  } = useFormik({
+    initialValues: initialValues,
+    validationSchema,
+  });
 
   const [usermanagementCheck, setusermanagementCheck] = useState(false);
   // console.log("create props : ", props);
   const [companyName, setCompanyName] = useState("");
 
   // Fields States
-  const [fname, setfName] = useState("");
-  const [lname, setlName] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [password, setPassword] = useState("");
+  // const [fname, setfName] = useState("");
+  // const [lname, setlName] = useState("");
+  // const [birthday, setBirthday] = useState("");
+  // const [password, setPassword] = useState("");
   // const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [fax, setFax] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [mailbox, setMailbox] = useState("");
-  const [role, setRole] = useState("");
-  const [companyid, setCompanyid] = useState("");
-  const [salutation, setSalutation] = useState("");
-  const [title, setTitle] = useState("");
-  const [homepage, setHomepage] = useState("");
-  const [telephone, setTelephone] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [mobile, setMobile] = useState("");
+  // const [fax, setFax] = useState("");
+  // const [country, setCountry] = useState("");
+  // const [city, setCity] = useState("");
+  // const [street, setStreet] = useState("");
+  // const [mailbox, setMailbox] = useState("");
+  // const [role, setRole] = useState("");
+  // const [companyid, setCompanyid] = useState("");
+  // const [salutation, setSalutation] = useState("");
+  // const [title, setTitle] = useState("");
+  // const [homepage, setHomepage] = useState("");
+  // const [telephone, setTelephone] = useState("");
 
   // Handle Cancel Button
 
@@ -52,127 +153,16 @@ export const Usermanagementcreate = (props) => {
   // Handle Save
   const handleSave = (data) => {
     const formData = new FormData();
-    console.log("companyid", companyid);
-  console.log("props", props.id);
+    // console.log("companyid", companyid);
+    // console.log("props", props.id);
 
-
-    // If state is not empty then append state into formData otherwise append the props.editItem into formData
-
-    {
-      fname !== ""
-        ? formData.append("first_name", fname)
-        : formData.append("first_name", props.editItem.first_name);
-    }
-
-    {
-      lname !== ""
-        ? formData.append("last_name", lname)
-        : formData.append("last_name", props.editItem.last_name);
-    }
-
-    {
-      birthday !== ""
-        ? formData.append("birthday", birthday)
-        : formData.append("birthday", props.editItem.birthday);
-    }
-
-    {
-      password !== ""
-        ? formData.append("password", password)
-        : formData.append("password", props.editItem.password);
-    }
-
-    {
-      password !== ""
-        ? formData.append("password_confirmation", password)
-        : formData.append("password_confirmation", props.editItem.password);
-    }
-
-    {
-      email !== ""
-        ? formData.append("email", email)
-        : formData.append("email", props.editItem.email);
-    }
-
-    {
-      mobile !== ""
-        ? formData.append("mobile", mobile)
-        : formData.append("mobile", props.editItem.mobile);
-    }
-
-    {
-      fax !== ""
-        ? formData.append("fax", fax)
-        : formData.append("fax", props.editItem.fax);
-    }
-
-    {
-      country !== ""
-        ? formData.append("country", country)
-        : formData.append("country", props.editItem.country);
-    }
-
-    {
-      city !== ""
-        ? formData.append("city", city)
-        : formData.append("city", props.editItem.city);
-    }
-
-    {
-      street !== ""
-        ? formData.append("street_no", street)
-        : formData.append("street_no", props.editItem.street_no);
-    }
-
-    {
-      mailbox !== ""
-        ? formData.append("mailbox", mailbox)
-        : formData.append("mailbox", props.editItem.mailbox);
-    }
-
-    {
-      role !== ""
-        ? formData.append("role", role)
-        : formData.append("role", props.editItem.myRole[0]);
-    }
-
-    {
-      mailbox !== ""
-        ? formData.append("mailbox", mailbox)
-        : formData.append("mailbox", props.editItem.mailbox);
-    }
-
-    {
-      companyid !== ""
-        ? formData.append("company_id", companyid)
-        : formData.append("company_id", props.editItem.company_id);
-    }
-
-    {
-      salutation !== ""
-        ? formData.append("salutation", salutation)
-        : formData.append("salutation", props.editItem.salutation);
-    }
-
-    {
-      title !== ""
-        ? formData.append("title", title)
-        : formData.append("title", props.editItem.title);
-    }
-
-    {
-      homepage !== ""
-        ? formData.append("homepage", homepage)
-        : formData.append("homepage", props.editItem.homepage);
-    }
-
-    formData.append("_method", "PUT");
+    // If state is not empty then append state into formData otherwise append the props.editItem into formDate
 
     http
       .post(`/user/${props.editItem.id}`, formData)
       .then((res) => {
-        console.log(res)
-        toast.success("update succesfully")
+        console.log(res);
+        toast.success("update succesfully");
         setusermanagementCheck(!usermanagementCheck);
       })
       .catch((err) => toast.error(err.message));
@@ -180,37 +170,15 @@ export const Usermanagementcreate = (props) => {
 
   // Handle Create New Uuser
   const handleCreateUser = () => {
-  console.log("companyid", companyid);
-
-    const formData = new FormData();
-
-    formData.append("salutation", salutation);
-    formData.append("first_name", fname);
-    formData.append("last_name", lname);
-    formData.append("birthday", birthday);
-    formData.append("password", password);
-    formData.append("password_confirmation", password);
-    formData.append("email", email);
-    formData.append("mobile", mobile);
-    formData.append("fax", fax);
-    formData.append("country", country);
-    formData.append("city", city);
-    formData.append("street_no", street);
-    formData.append("mailbox", mailbox);
-    formData.append("role", role);
-    formData.append("company_id", companyid);
-    formData.append("title", title);
-    formData.append("homepage", homepage);
-    formData.append("telephone", telephone);
-
-    http
-      .post(`/user`, formData)
-      .then((res) => {
-        toast.success("create succesfully")
-
-        setusermanagementCheck(!usermanagementCheck);
-      })
-      .catch((err) => toast.error(err.message));
+    // console.log("companyid", companyid);
+    // const formData = new FormData();
+    // http
+    //   .post(`/user`, formData)
+    //   .then((res) => {
+    //     toast.success("create succesfully");
+    //     setusermanagementCheck(!usermanagementCheck);
+    //   })
+    //   .catch((err) => toast.error(err.message));
   };
   const [companylist, setCompanylist] = useState([]);
   const fetchListCompany = async () => {
@@ -232,7 +200,7 @@ export const Usermanagementcreate = (props) => {
           <Toolbar />
 
           <div className="flex justify-between items-center border-slate-400 ">
-            <div className="flex items-center justify-center"> 
+            <div className="flex items-center justify-center">
               <WestIcon
                 onClick={() => setusermanagementCheck(!usermanagementCheck)}
                 className="backButton"
@@ -242,9 +210,7 @@ export const Usermanagementcreate = (props) => {
                   {props.editItem.first_name} {props.editItem.last_name}
                 </h1>
               ) : (
-                <h1 className="text-base text-bold mb-0 ml-5">
-                  Create Company
-                </h1>
+                <h1 className="text-base text-bold mb-0 ml-5">Create User</h1>
               )}
             </div>
 
@@ -254,8 +220,8 @@ export const Usermanagementcreate = (props) => {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
+                  value={values.role}
+                  onChange={handleChange}
                 >
                   <MenuItem value="expert">Experts</MenuItem>
                   <MenuItem value="clerk">Clerks</MenuItem>
@@ -287,15 +253,11 @@ export const Usermanagementcreate = (props) => {
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={companyName}
-                        onChange={(e) => {
-                          console.log(e);
-                          setCompanyName(e.target.value)
-                          setCompanyid(e.target.value)
-                        } }
+                        value={values.companyid}
+                        onChange={handleChange}
                       >
-                        {companylist.map(({id, name}, index) => (
-                          <MenuItem key={index} value={id}>
+                        {companylist.map(({ id, name }, index) => (
+                          <MenuItem key={index} value={id} name={name}>
                             {name}
                           </MenuItem>
                         ))}
@@ -322,18 +284,22 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Salution
                   </p>
-
-                  <TextField
-                    fullWidth
-                    label="Enter salution"
-                    id="fname"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? salutation
-                        : props.editItem.salutation
-                    }
-                    onChange={(e) => setSalutation(e.target.value)}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-salutation-select-label">
+                      {" "}
+                      Salutation{" "}
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-salutation-select-label"
+                      id="demo-simple-salutation--select"
+                      value={values.salutation}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="MR">MR</MenuItem>
+                      <MenuItem value="MRS">MR's</MenuItem>
+                      <MenuItem value="MS">MS</MenuItem>
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
               <div className="col-lg-6">
@@ -344,10 +310,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="Enter Title"
                     id="0317258963"
-                    defaultValue={
-                      props.editItem == undefined ? title : props.editItem.title
-                    }
-                    onChange={(e) => setTitle(e.target.value)}
+                    value={values.title}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -362,14 +326,10 @@ export const Usermanagementcreate = (props) => {
 
                   <TextField
                     fullWidth
-                    label="fname"
+                    label="First Name"
                     id="fname"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? fname
-                        : props.editItem.first_name
-                    }
-                    onChange={(e) => setfName(e.target.value)}
+                    value={values.fname}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -381,14 +341,10 @@ export const Usermanagementcreate = (props) => {
 
                   <TextField
                     fullWidth
-                    label="lname"
+                    label="Last Name"
                     id="0317258963"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? lname
-                        : props.editItem.last_name
-                    }
-                    onChange={(e) => setlName(e.target.value)}
+                    values={values.lname}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -404,12 +360,8 @@ export const Usermanagementcreate = (props) => {
                   <TextField
                     type="date"
                     fullWidth
-                    defaultValue={
-                      props.editItem == undefined
-                        ? birthday
-                        : props.editItem.birthday
-                    }
-                    onChange={(e) => setBirthday(e.target.value)}
+                    value={values.birthday}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -425,12 +377,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="Password"
                     id="0317258963"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? password
-                        : props.editItem.password
-                    }
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={values.password}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -447,8 +395,30 @@ export const Usermanagementcreate = (props) => {
             </div> */}
               <div className="STATUS d-flex mt-5">
                 <p>Status: </p>
-
-                <div className="form-check form-check-inline ps-5">
+                <FormControl>
+                  <FormLabel id="demo-row-radio-buttons-group-label">
+                    Status
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                    value={values.gender}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="option1"
+                      control={<Radio />}
+                      label="Active"
+                    />
+                    <FormControlLabel
+                      value="option2"
+                      control={<Radio />}
+                      label="Not Active"
+                    />
+                  </RadioGroup>
+                </FormControl>
+                {/* <div className="form-check form-check-inline ps-5">
                   <input
                     className="form-check-input"
                     type="radio"
@@ -471,7 +441,7 @@ export const Usermanagementcreate = (props) => {
                   <label className="form-check-label" for="inlineRadio2">
                     Not Active
                   </label>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
@@ -492,10 +462,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="exam@gmail.com"
                     id="email"
-                    defaultValue={
-                      props.editItem == undefined ? email : props.editItem.email
-                    }
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={values.email}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -510,12 +478,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="http//"
                     id="Enter your mail box"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? homepage
-                        : props.editItem.homepage
-                    }
-                    onChange={(e) => setHomepage(e.target.value)}
+                    value={values.homepage}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -530,12 +494,9 @@ export const Usermanagementcreate = (props) => {
 
                   <MuiTelInput
                     defaultCountry="DE"
-                    value={
-                      props.editItem == undefined
-                        ? telephone
-                        : props.editItem.telephone
-                    }
-                    onChange={(e) => setTelephone(e)}
+                    forceCallingCode
+                    value={values.telephone}
+                    onChange={handleChange}
                     fullWidth
                   />
                 </div>
@@ -546,12 +507,9 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
                   <MuiTelInput
                     defaultCountry="DE"
-                    value={
-                      props.editItem == undefined
-                        ? mobile
-                        : props.editItem.mobile
-                    }
-                    onChange={(e) => setMobile(e)}
+                    forceCallingCode
+                    value={values.mobile}
+                    onChange={handleChange}
                     fullWidth
                   />
                 </div>
@@ -562,15 +520,13 @@ export const Usermanagementcreate = (props) => {
               <div className="col-lg-6">
                 <div className="Telephone">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
-
-                  <TextField
-                    fullWidth
-                    label="Enter Fax"
+                  <MuiTelInput
+                    defaultCountry="DE"
+                    forceCallingCode
                     id="fax"
-                    defaultValue={
-                      props.editItem == undefined ? fax : props.editItem.fax
-                    }
-                    onChange={(e) => setFax(e.target.value)}
+                    value={values.fax}
+                    onChange={handleChange}
+                    fullWidth
                   />
                 </div>
               </div>
@@ -590,33 +546,53 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Country
                   </p>
-
-                  <TextField
-                    fullWidth
+                  <select
+                    id="country"
+                    name="country"
+                    labelId="country"
+                    value={values.country}
+                    onChange={(e) => {
+                      setFieldValue("country", e.target.value);
+                    }}
                     label="Country"
-                    id="Enter your country"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? country
-                        : props.editItem.country
-                    }
-                    onChange={(e) => setCountry(e.target.value)}
-                  />
+                    className="form-select form-select-lg mb-0 w-100"
+                    required
+                    error={Boolean(touched.country && errors.country)}
+                    helperText={touched.country && errors.country}
+                  >
+                    {!!countriesArr?.length &&
+                      countriesArr.map(({ label, value }) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                  </select>
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="country">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
 
-                  <TextField
-                    fullWidth
-                    label="city"
-                    id="Country name"
-                    defaultValue={
-                      props.editItem == undefined ? city : props.editItem.city
-                    }
-                    onChange={(e) => setCity(e.target.value)}
-                  />
+                  <select
+                    id="zipCity"
+                    name="zipCity"
+                    labelId="zipCity"
+                    value={values.city}
+                    onChange={(e) => {
+                      setFieldValue("city", e.target.value);
+                    }}
+                    label="City"
+                    required
+                    className="form-select form-select-lg mb-0 w-100"
+                    error={Boolean(touched.city && errors.city)}
+                    helperText={touched.city && errors.city}
+                  >
+                    {cities.map(({ label, value }, id) => (
+                      <option key={id} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -632,12 +608,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="street no."
                     id="City"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? street
-                        : props.editItem.street_no
-                    }
-                    onChange={(e) => setStreet(e.target.value)}
+                    value={values.street}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -651,12 +623,8 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                     label="mailbox"
                     id="Street No*"
-                    defaultValue={
-                      props.editItem == undefined
-                        ? mailbox
-                        : props.editItem.mailbox
-                    }
-                    onChange={(e) => setMailbox(e.target.value)}
+                    value={values.mailbox}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -707,7 +675,7 @@ export const Usermanagementcreate = (props) => {
               onClick={() => {
                 if (props.editItem == undefined) {
                   handleCreateUser();
-                  return
+                  return;
                 }
                 handleSave();
               }}

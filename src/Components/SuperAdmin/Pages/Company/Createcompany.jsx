@@ -14,6 +14,7 @@ import { Country, City } from "country-state-city";
 import { useMemo } from "react";
 
 const countriesObj = Country.getAllCountries();
+
 const getCities = (countryName) => {
   const code = countriesObj.find((item) => {
     return item.name === countryName;
@@ -24,6 +25,7 @@ const getCities = (countryName) => {
     return { label: city.name, value: city.name };
   });
 };
+
 const isValidUrl = (value) => {
   try {
     new URL(value);
@@ -110,6 +112,7 @@ export const Createcompany = (props) => {
   });
 
   const cities = useMemo(() => getCities(values.country), [values.country]);
+
   // Handle Cancel Button
   const handleSave = () => {
     setTouched({

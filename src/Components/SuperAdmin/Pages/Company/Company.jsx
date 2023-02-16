@@ -1,8 +1,10 @@
 import * as React from "react";
 import { useState } from "react";
-import { TablePagination, Toolbar } from "@mui/material";
+import { InputAdornment, TablePagination, Toolbar } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
-import { LastPage, FirstPage, KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import ToolTip from "@mui/material/Tooltip"
+import TextField from "@mui/material/TextField";
+import { LastPage, FirstPage, KeyboardArrowLeft, KeyboardArrowRight, Search } from "@mui/icons-material";
 import {Box, IconButton} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Table from "@mui/material/Table";
@@ -118,11 +120,31 @@ export function Company() {
       ) : (
         <>
           <div style={{ height: 400, width: "100%" }}>
-            <Toolbar />
-
+          <Toolbar />
             <div className="flex justify-between">
               <h1 className="text-base text-bold mb-0 ml-5">List of Company</h1>
-              <div className="mr-5">
+              <div className="mr-5 flex justify-between gap-2">
+                  <form>
+                    <TextField
+                      id="search-bar"
+                      className="text"
+                      onInput={(e) => {
+                        console.log(e.target.value);
+                      }}
+                      name="s"
+                      label="Search"
+                      variant="outlined"
+                      placeholder="Search..."
+                      size="small"
+                      endAdornment={
+                        <InputAdornment>
+                          <IconButton type="submit" aria-label="search">
+                            <Search style={{ fill: "blue" }} />
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </form>
                 <CreateBtn
                   name="Create"
                   icon={<AddIcon />}

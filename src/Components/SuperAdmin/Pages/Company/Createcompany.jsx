@@ -109,9 +109,14 @@ export const Createcompany = (props) => {
     validationSchema: formValidationSchema,
   });
 
-  const cities = useMemo(() => getCities(values.country), [values.country]);
+  const cities = useMemo(() => {
+    const cities = getCities(values.country)
+    values.city = cities[0] ? cities[0].value : "";
+    return cities;
+  }, [values.country]);
   // Handle Cancel Button
   const handleSave = () => {
+    console.log(values);
     setTouched({
       ...Object.keys(initialValues).reduce(
         (acc, key) => ({ ...acc, [key]: true }),

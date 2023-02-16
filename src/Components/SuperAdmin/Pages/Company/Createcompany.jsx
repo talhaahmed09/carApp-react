@@ -90,7 +90,7 @@ export const Createcompany = (props) => {
     mobile: "",
     fax: "",
     country: "Germany",
-    city: "",
+    city: "Aach",
     street_no: "",
   };
 

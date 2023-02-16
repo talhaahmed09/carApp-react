@@ -1,4 +1,4 @@
-import { OutlinedInput, TextField } from "@mui/material";
+import { InputLabel, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { Company } from "./Company";
@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { matchIsValidTel, MuiTelInput } from "mui-tel-input";
 import { Country, City } from "country-state-city";
 import { useMemo } from "react";
+import FormControl from "@mui/material/FormControl";
 
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
@@ -417,57 +418,53 @@ export const Createcompany = (props) => {
           <div className="row mt-5">
             <div className="col-lg-6">
               <div className="country">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Country *
-                </p>
-                <select
-                  id="country"
-                  name="country"
-                  labelId="country"
-                  value={values.country}
-                  onChange={(e) => {
-                    setFieldValue("country", e.target.value);
-                  }}
-                  label="Country"
-                  className="form-select form-select-lg mb-0 w-100"
-                  required
-                  error={Boolean(touched.country && errors.country)}
-                  helperText={touched.country && errors.country}
-                >
-                  {!!countriesArr?.length &&
-                    countriesArr.map(({ label, value }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                </select>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country *</p>
+                <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
+                <InputLabel id="country-label">Country</InputLabel>
+                  <Select
+                    id="country"
+                    name="country"
+                    labelId="country-label"
+                    label="Country"
+                    >
+                    {countriesArr?.length &&
+                      countriesArr.map(({ label, value }) => (
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                  </FormControl>
               </div>
             </div>
 
             <div className="col-lg-6">
               <div className="ZIP / City">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>City *</p>
-                <select
-                  id="zipCity"
-                  name="zipCity"
-                  labelId="zipCity"
-                  value={values.city}
-                  onChange={(e) => {
-                    setFieldValue("city", e.target.value);
-                  }}
-                  label="City"
-                  required
-                  input={<OutlinedInput label="Name" />}
-                  className="form-select form-select-lg mb-0 w-100"
-                  error={Boolean(touched.city && errors.city)}
-                  helperText={touched.city && errors.city}
-                >
-                  {cities.map(({ label, value }, id) => (
-                    <option key={id} value={value}>
-                      {label}
-                    </option>
+                <FormControl fullWidth required error={Boolean(touched.city && errors.city)}>
+                <InputLabel id="city-label">City</InputLabel>
+                  <Select
+                     id="zipCity"
+                     name="zipCity"
+                     labelId="zipCity"
+                     value={values.city}
+                     onChange={(e) => {
+                       setFieldValue("city", e.target.value);
+                     }}
+                     label="City"
+                     required
+                     input={<OutlinedInput label="Name" />}
+                     error={Boolean(touched.city && errors.city)}
+                     helperText={touched.city && errors.city}
+                    >
+                      {cities.map(({ label, value }, id) => (
+                        <MenuItem key={id} value={value}>
+                          {label}
+                        </MenuItem>
                   ))}
-                </select>
+                    
+                  </Select>
+                  </FormControl>
               </div>
             </div>
           </div>

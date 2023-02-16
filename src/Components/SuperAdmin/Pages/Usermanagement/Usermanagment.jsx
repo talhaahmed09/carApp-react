@@ -23,23 +23,38 @@ export default function Usermanagment() {
   const [Userlist, setUserlist] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [editItem, setEditItem] = useState()
-  
-  const fetchListCompany = async (data) => {
+  const [editItem, setEditItem] = useState();
+
+  const fetchListUser = async (data) => {
     // api call
     setLoading(true);
     let res = await http.get("/user");
-    
+
     if (res.data.responseStatus === 200) {
       setUserlist(res.data.responseMessage);
-        
-      }
+      fetchListCompany();
+    }
     setLoading(false);
   };
   // console.log("Userlist:", Userlist[0].first_name);
   React.useEffect(() => {
-    fetchListCompany();
+    fetchListUser();
   }, []);
+  const [companylist, setCompanylist] = useState([]);
+
+  const fetchListCompany = async () => {
+    // api call
+
+    let res = await http.get("/company");
+    setCompanylist((prev) => res.data.responseMessage);
+  };
+
+  const getCompanyName = (id) => {
+    const company = companylist.find((item) => item.id === Number(id));
+    console.log("company", company);
+    return company ? company.name : "-";
+    // return company.name;'
+  };
   // pagination
   let [page, setPage] = useState(1);
   const PER_PAGE = 10;
@@ -55,7 +70,11 @@ export default function Usermanagment() {
   return (
     <>
       {UserCheck || editIndex != null ? (
-        <Usermanagementcreate  editIndex={editIndex} UserCheck={UserCheck} editItem = {editItem} />
+        <Usermanagementcreate
+          editIndex={editIndex}
+          UserCheck={UserCheck}
+          editItem={editItem}
+        />
       ) : (
         <>
           <div style={{ height: 400, width: "100%" }}>
@@ -73,8 +92,6 @@ export default function Usermanagment() {
               </div>
             </div>
 
-            
-
             <TableContainer component={Paper}>
               {loading ? (
                 <PageloaderAll />
@@ -82,42 +99,49 @@ export default function Usermanagment() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      
                       <TableCell align="">Name</TableCell>
+                      <TableCell align="center">Company</TableCell>
                       <TableCell align="center">Contact</TableCell>
                       <TableCell align="center">Address</TableCell>
-                     
+
                       <TableCell align="center">Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    { Userlist &&
-                    _DATA.currentData().map((data, index) => {
-                      return (
-                        <TableRow key={data.id}>
-                       
-                          <TableCell  component="th" scope="row" >
-                              <p className="mb-0">{data.first_name} {data.last_name}</p>
-                              <p className="mb-0 text-slate-400">{data.myRole}</p>
-                          </TableCell>
-                          <TableCell align="center">{data.mobile}</TableCell>
-                          <TableCell align="center">{data.street_no}, {data.city}, {data.country}</TableCell>
-                          
+                    {Userlist &&
+                      _DATA.currentData().map((data, index) => {
+                        return (
+                          <TableRow key={data.id}>
+                            <TableCell component="th" scope="row">
+                              <p className="mb-0">
+                                {data.first_name} {data.last_name}
+                              </p>
+                              <p className="mb-0 text-slate-400">
+                                {data.myRole}
+                              </p>
+                            </TableCell>
+                            <TableCell align="center">
+                              {companylist && getCompanyName(data.company_id)}
+                            </TableCell>
+                            <TableCell align="center">{data.mobile}</TableCell>
+                            <TableCell align="center">
+                              {data.street_no}, {data.city}, {data.country}
+                            </TableCell>
 
-                          <TableCell align="center">
-                            <SelectPopover
-                              {...data}
-                              apiName="user"
-                              SetState={setUserlist}
-                              state={Userlist}
-                              setEditIndex={setEditIndex}
-                              index={index}
-                              setEditItem ={setEditItem}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                            <TableCell align="center">
+                              <SelectPopover
+                                {...data}
+                                apiName="user"
+                                SetState={setUserlist}
+                                state={Userlist}
+                                setEditIndex={setEditIndex}
+                                index={index}
+                                setEditItem={setEditItem}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                   </TableBody>
                 </Table>
               )}

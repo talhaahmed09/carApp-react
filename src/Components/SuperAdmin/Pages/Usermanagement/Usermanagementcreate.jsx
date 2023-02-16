@@ -47,19 +47,27 @@ const isValidUrl = (value) => {
 const validationSchema = Yup.object().shape({
   salutation: Yup.string().required("Salutation is required"),
   title: Yup.string().required("Title is required"),
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-  password: Yup.string().required("Password is required"),
+  first_name: Yup.string().required("First name is required"),
+  last_name: Yup.string().required("Last name is required"),
+  password: Yup.string()
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      "Password must contain at least 1 uppercase, 1 number, and 1 special character"
+    )
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
   country: Yup.string().required("Country is required"),
-  zip: Yup.string().required("Zip code is required"),
   city: Yup.string().required("City is required"),
-  street: Yup.string().required("Street address is required"),
+  street_no: Yup.string().required("Street address is required"),
   role: Yup.string().required("Role is required"),
-  companyid: Yup.string().required("Company is required"),
+  company_id: Yup.string().required("Company is required"),
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
+  telephone: Yup.string().required("Telephone Number is required"),
 });
 
 export const Usermanagementcreate = (props) => {
@@ -70,39 +78,26 @@ export const Usermanagementcreate = (props) => {
     return { label: country.name, value: country.name };
   });
 
-  const cities = useMemo(() => getCities(values.country), [values.country]);
-
   const initialValues = {
     salutation: "",
     title: "",
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     birthday: "",
     password: "",
+    confirmPassword: "",
     active: false,
     email: "",
     role: "",
+    homepage: "",
+    company_id: "",
     telephone: "",
     mobile: "",
     fax: "",
-    country: "",
-    zip: "",
+    country: "Germany",
     mailbox: "",
     city: "",
-    street: "",
-    design: "",
-    letterhead: "",
-    letterfoot: "",
-    siteProfile: "",
-    postalSender: "",
-    senderAddress: "",
-    senderName: "",
-    contactDetails: "",
-    signature: "",
-    rubberStamp: "",
-    smtpServer: "",
-    smtpPort: "",
-    username: "",
+    street_no: "",
   };
 
   const {
@@ -120,30 +115,10 @@ export const Usermanagementcreate = (props) => {
     validationSchema,
   });
 
+  const cities = useMemo(() => getCities(values.country), [values.country]);
+
   const [usermanagementCheck, setusermanagementCheck] = useState(false);
   // console.log("create props : ", props);
-  const [companyName, setCompanyName] = useState("");
-
-  // Fields States
-  // const [fname, setfName] = useState("");
-  // const [lname, setlName] = useState("");
-  // const [birthday, setBirthday] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [passwordConfirm, setPasswordConfirm] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [mobile, setMobile] = useState("");
-  // const [fax, setFax] = useState("");
-  // const [country, setCountry] = useState("");
-  // const [city, setCity] = useState("");
-  // const [street, setStreet] = useState("");
-  // const [mailbox, setMailbox] = useState("");
-  // const [role, setRole] = useState("");
-  // const [companyid, setCompanyid] = useState("");
-  // const [salutation, setSalutation] = useState("");
-  // const [title, setTitle] = useState("");
-  // const [homepage, setHomepage] = useState("");
-  // const [telephone, setTelephone] = useState("");
-
   // Handle Cancel Button
 
   const handleCancel = () => {
@@ -170,15 +145,26 @@ export const Usermanagementcreate = (props) => {
 
   // Handle Create New Uuser
   const handleCreateUser = () => {
+    setTouched({
+      ...Object.keys(initialValues).reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      ),
+    });
+    if (!isValid) {
+      console.log(values);
+      return console.log("Hello dumb mf");
+    }
+    console.log(values, touched);
     // console.log("companyid", companyid);
     // const formData = new FormData();
-    // http
-    //   .post(`/user`, formData)
-    //   .then((res) => {
-    //     toast.success("create succesfully");
-    //     setusermanagementCheck(!usermanagementCheck);
-    //   })
-    //   .catch((err) => toast.error(err.message));
+    http
+      .post(`/user`, values)
+      .then((res) => {
+        toast.success("create succesfully");
+        setusermanagementCheck(!usermanagementCheck);
+      })
+      .catch((err) => toast.error(err.message));
   };
   const [companylist, setCompanylist] = useState([]);
   const fetchListCompany = async () => {
@@ -221,7 +207,10 @@ export const Usermanagementcreate = (props) => {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={values.role}
-                  onChange={handleChange}
+                  onChange={(e) => setFieldValue("role", e.target.value)}
+                  onBlur={handleBlur}
+                  error={touched.role && errors.role}
+                  helperText={touched.role && errors.role}
                 >
                   <MenuItem value="expert">Experts</MenuItem>
                   <MenuItem value="clerk">Clerks</MenuItem>
@@ -253,8 +242,13 @@ export const Usermanagementcreate = (props) => {
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={values.companyid}
-                        onChange={handleChange}
+                        value={values.company_id}
+                        onChange={(e) =>
+                          setFieldValue("company_id", e.target.value)
+                        }
+                        onBlur={handleBlur}
+                        error={touched.company_id && errors.company_id}
+                        helperText={touched.company_id && errors.company_id}
                       >
                         {companylist.map(({ id, name }, index) => (
                           <MenuItem key={index} value={id} name={name}>
@@ -282,18 +276,24 @@ export const Usermanagementcreate = (props) => {
               <div className="col-lg-6">
                 <div className="managing">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Salution
+                    Salution *
                   </p>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-salutation-select-label">
                       {" "}
-                      Salutation{" "}
+                      Salutation *
                     </InputLabel>
                     <Select
+                      required
                       labelId="demo-simple-salutation-select-label"
                       id="demo-simple-salutation--select"
                       value={values.salutation}
-                      onChange={handleChange}
+                      onChange={(e) =>
+                        setFieldValue("salutation", e.target.value)
+                      }
+                      onBlur={handleBlur}
+                      error={touched.salutation && errors.salutation}
+                      helperText={touched.salutation && errors.salutation}
                     >
                       <MenuItem value="MR">MR</MenuItem>
                       <MenuItem value="MRS">MR's</MenuItem>
@@ -308,10 +308,15 @@ export const Usermanagementcreate = (props) => {
 
                   <TextField
                     fullWidth
+                    required
                     label="Enter Title"
-                    id="0317258963"
+                    id="title"
+                    name="title"
                     value={values.title}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.title && errors.title}
+                    helperText={touched.title && errors.title}
                   />
                 </div>
               </div>
@@ -327,9 +332,13 @@ export const Usermanagementcreate = (props) => {
                   <TextField
                     fullWidth
                     label="First Name"
-                    id="fname"
-                    value={values.fname}
+                    id="first_name"
+                    name="first_name"
+                    value={values.first_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.first_name && errors.first_name}
+                    helperText={touched.first_name && errors.first_name}
                   />
                 </div>
               </div>
@@ -342,9 +351,13 @@ export const Usermanagementcreate = (props) => {
                   <TextField
                     fullWidth
                     label="Last Name"
-                    id="0317258963"
-                    values={values.lname}
+                    id="last_name"
+                    name="last_name"
+                    values={values.last_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.last_name && errors.last_name}
+                    helperText={touched.last_name && errors.last_name}
                   />
                 </div>
               </div>
@@ -356,55 +369,32 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Birthday
                   </p>
-
                   <TextField
                     type="date"
                     fullWidth
+                    id="birthday"
+                    name="birthday"
                     value={values.birthday}
                     onChange={handleChange}
                   />
                 </div>
               </div>
-
-              <div className="col-lg-6">
-                <div className="Commerical">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Password
-                  </p>
-
-                  <TextField
-                    type="password"
-                    fullWidth
-                    label="Password"
-                    id="0317258963"
-                    value={values.password}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* <div className="col-lg-6 mt-5">
-              <div className="Tax">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Password Confirmation
-                </p>
-
-                <TextField fullWidth label="confirm password" id="0317258963"  defaultValue = {props.editItem == undefined ? passwordConfirm : props.editItem.password_confirmation}
-                onChange={(e) => setPasswordConfirm(e.target.value)} />
-              </div>
-            </div> */}
-              <div className="STATUS d-flex mt-5">
-                <p>Status: </p>
+              <div className=" col-lg-6 ">
                 <FormControl>
                   <FormLabel id="demo-row-radio-buttons-group-label">
-                    Status
+                    Status *
                   </FormLabel>
                   <RadioGroup
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
                     name="row-radio-buttons-group"
-                    value={values.gender}
-                    onChange={handleChange}
+                    value={values.active}
+                    onChange={(e) => {
+                      setFieldValue("active", e.target.value);
+                    }}
+                    onBlur={handleBlur}
+                    error={touched.active && errors.active}
+                    helperText={touched.active && errors.active}
                   >
                     <FormControlLabel
                       value="option1"
@@ -418,30 +408,48 @@ export const Usermanagementcreate = (props) => {
                     />
                   </RadioGroup>
                 </FormControl>
-                {/* <div className="form-check form-check-inline ps-5">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="inlineRadioOptions"
-                    id="inlineRadio1"
-                    value="option1"
+              </div>
+              <div className="col-lg-6 mt-5">
+                <div className="Commerical">
+                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                    Password
+                  </p>
+
+                  <TextField
+                    type="password"
+                    name="password"
+                    fullWidth
+                    label="Password"
+                    id="0317258963"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.password && errors.password}
+                    helperText={touched.password && errors.password}
                   />
-                  <label className="form-check-label" for="inlineRadio1">
-                    Active
-                  </label>
                 </div>
-                <div className="form-check form-check-inline">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="inlineRadioOptions"
-                    id="inlineRadio2"
-                    value="option2"
+              </div>
+              <div className="col-lg-6 mt-5">
+                <div className="Commerical">
+                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                    Confirm Password
+                  </p>
+
+                  <TextField
+                    name="confirmPassword"
+                    id="confirmPassword"
+                    label="Confirm Password"
+                    type="password"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.confirmPassword && errors.confirmPassword}
+                    helperText={
+                      touched.confirmPassword && errors.confirmPassword
+                    }
+                    fullWidth
                   />
-                  <label className="form-check-label" for="inlineRadio2">
-                    Not Active
-                  </label>
-                </div> */}
+                </div>
               </div>
             </div>
           </section>
@@ -460,10 +468,16 @@ export const Usermanagementcreate = (props) => {
 
                   <TextField
                     fullWidth
-                    label="exam@gmail.com"
+                    type="email"
+                    label="Email"
                     id="email"
+                    name="email"
+                    required
                     value={values.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.email && errors.email}
+                    helperText={touched.email && errors.email}
                   />
                 </div>
               </div>
@@ -477,9 +491,13 @@ export const Usermanagementcreate = (props) => {
                   <TextField
                     fullWidth
                     label="http//"
-                    id="Enter your mail box"
+                    id="homepage"
+                    name="homepage"
                     value={values.homepage}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.homepage && errors.homepage}
+                    helperText={touched.homepage && errors.homepage}
                   />
                 </div>
               </div>
@@ -495,9 +513,15 @@ export const Usermanagementcreate = (props) => {
                   <MuiTelInput
                     defaultCountry="DE"
                     forceCallingCode
+                    id="telephone"
+                    name="telephone"
                     value={values.telephone}
-                    onChange={handleChange}
+                    onChange={(e) => setFieldValue("telephone", e)}
                     fullWidth
+                    required
+                    onBlur={handleBlur}
+                    error={touched.telephone && errors.telephone}
+                    helperText={touched.telephone && errors.telephone}
                   />
                 </div>
               </div>
@@ -507,9 +531,11 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
                   <MuiTelInput
                     defaultCountry="DE"
+                    id="mobile"
+                    name="mobile"
                     forceCallingCode
                     value={values.mobile}
-                    onChange={handleChange}
+                    onChange={(e) => setFieldValue("mobile", e)}
                     fullWidth
                   />
                 </div>
@@ -524,8 +550,9 @@ export const Usermanagementcreate = (props) => {
                     defaultCountry="DE"
                     forceCallingCode
                     id="fax"
+                    name="fax"
                     value={values.fax}
-                    onChange={handleChange}
+                    onChange={(e) => setFieldValue("fax", e)}
                     fullWidth
                   />
                 </div>
@@ -583,6 +610,7 @@ export const Usermanagementcreate = (props) => {
                     }}
                     label="City"
                     required
+                    onBlur={handleBlur}
                     className="form-select form-select-lg mb-0 w-100"
                     error={Boolean(touched.city && errors.city)}
                     helperText={touched.city && errors.city}
@@ -606,10 +634,14 @@ export const Usermanagementcreate = (props) => {
 
                   <TextField
                     fullWidth
-                    label="street no."
-                    id="City"
-                    value={values.street}
+                    label="Street #"
+                    id="street_no"
+                    name="street_no"
+                    value={values.street_no}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={Boolean(touched.street_no && errors.street_no)}
+                    helperText={touched.street_no && errors.street_no}
                   />
                 </div>
               </div>
@@ -622,46 +654,14 @@ export const Usermanagementcreate = (props) => {
                   <TextField
                     fullWidth
                     label="mailbox"
-                    id="Street No*"
+                    id="mailbox"
+                    name="mailbox"
                     value={values.mailbox}
                     onChange={handleChange}
                   />
                 </div>
               </div>
-
-              {/* <div className="col-lg-6">
-              <div className="Mail">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Role</p>
-
-                <TextField fullWidth label="role" id="Enter your mail box"  defaultValue = {props.editItem == undefined ? role :props.editItem.myRole[0]}
-                onChange={(e) => setRole(e.target.value)}/>
-              </div>
-            </div> */}
             </div>
-
-            {/* <div className="row mt-5">
-            <div className="col-lg-6">
-              <div className="Street Number">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                  Company id
-                </p>
-
-                <TextField fullWidth label="company id" id="Street No*"   defaultValue = {props.editItem == undefined ? companyid :props.editItem.company_id}
-                onChange={(e) => setCompanyid(e.target.value)}/>
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <div className="Mail">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Role</p>
-
-                <TextField fullWidth label="role" id="Enter your mail box"  defaultValue = {props.editItem == undefined ? role :props.editItem.myRole[0]}
-                onChange={(e) => setRole(e.target.value)}/>
-              </div>
-            </div>
-
-        
-          </div> */}
           </section>
 
           <div className="flex justify-between mt-5 mb -5">

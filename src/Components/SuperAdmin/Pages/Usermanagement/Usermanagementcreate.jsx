@@ -206,6 +206,7 @@ export const Usermanagementcreate = (props) => {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
+                  label="Role"
                   value={values.role}
                   onChange={(e) => setFieldValue("role", e.target.value)}
                   onBlur={handleBlur}
@@ -242,6 +243,7 @@ export const Usermanagementcreate = (props) => {
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
+                        label="Select Company"
                         value={values.company_id}
                         onChange={(e) =>
                           setFieldValue("company_id", e.target.value)
@@ -280,12 +282,12 @@ export const Usermanagementcreate = (props) => {
                   </p>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-salutation-select-label">
-                      {" "}
                       Salutation *
                     </InputLabel>
                     <Select
                       required
                       labelId="demo-simple-salutation-select-label"
+                      label="Salutation *"
                       id="demo-simple-salutation--select"
                       value={values.salutation}
                       onChange={(e) =>
@@ -376,6 +378,10 @@ export const Usermanagementcreate = (props) => {
                     name="birthday"
                     value={values.birthday}
                     onChange={handleChange}
+                    label="Birthday"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
                   />
                 </div>
               </div>
@@ -515,6 +521,7 @@ export const Usermanagementcreate = (props) => {
                     forceCallingCode
                     id="telephone"
                     name="telephone"
+                    label="Telephone"
                     value={values.telephone}
                     onChange={(e) => setFieldValue("telephone", e)}
                     fullWidth
@@ -533,6 +540,7 @@ export const Usermanagementcreate = (props) => {
                     defaultCountry="DE"
                     id="mobile"
                     name="mobile"
+                    label="Mobile"
                     forceCallingCode
                     value={values.mobile}
                     onChange={(e) => setFieldValue("mobile", e)}
@@ -551,6 +559,7 @@ export const Usermanagementcreate = (props) => {
                     forceCallingCode
                     id="fax"
                     name="fax"
+                    label="Fax"
                     value={values.fax}
                     onChange={(e) => setFieldValue("fax", e)}
                     fullWidth

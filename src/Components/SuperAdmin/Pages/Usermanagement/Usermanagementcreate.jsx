@@ -96,7 +96,7 @@ export const Usermanagementcreate = (props) => {
     fax: "",
     country: "Germany",
     mailbox: "",
-    city: "",
+    city: "Aach",
     street_no: "",
   };
 
@@ -115,7 +115,11 @@ export const Usermanagementcreate = (props) => {
     validationSchema,
   });
 
-  const cities = useMemo(() => getCities(values.country), [values.country]);
+  const cities = useMemo(() => {
+    const cities = getCities(values.country);
+    values.city = cities[0] ? cities[0].value : "";
+    return cities;
+  }, [values.country]);
 
   const [usermanagementCheck, setusermanagementCheck] = useState(false);
   // console.log("create props : ", props);
@@ -582,54 +586,56 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Country
                   </p>
-                  <select
-                    id="country"
-                    name="country"
-                    labelId="country"
-                    value={values.country}
-                    onChange={(e) => {
-                      setFieldValue("country", e.target.value);
-                    }}
-                    label="Country"
-                    className="form-select form-select-lg mb-0 w-100"
-                    required
-                    error={Boolean(touched.country && errors.country)}
-                    helperText={touched.country && errors.country}
-                  >
-                    {!!countriesArr?.length &&
-                      countriesArr.map(({ label, value }) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                  </select>
+                  <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
+                    <InputLabel id="country-label">Country</InputLabel>
+                      <Select
+                        id="country"
+                        name="country"
+                        labelId="country-label"
+                        label="Country"
+                        value={values.country}
+                        error={Boolean(touched.country && errors.country)}
+                        helperText={touched.country && errors.country}
+                        required
+                        onChange={(e) => {
+                          setFieldValue("country", e.target.value);
+                        }}
+                        >
+                        {!!countriesArr?.length &&
+                          countriesArr.map(({ label, value }) => (
+                            <MenuItem key={value} value={value}>
+                              {label}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                  </FormControl>
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="country">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
-
-                  <select
-                    id="zipCity"
-                    name="zipCity"
-                    labelId="zipCity"
-                    value={values.city}
-                    onChange={(e) => {
-                      setFieldValue("city", e.target.value);
-                    }}
-                    label="City"
-                    required
-                    onBlur={handleBlur}
-                    className="form-select form-select-lg mb-0 w-100"
-                    error={Boolean(touched.city && errors.city)}
-                    helperText={touched.city && errors.city}
-                  >
-                    {cities.map(({ label, value }, id) => (
-                      <option key={id} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
+                  <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
+                    <InputLabel id="city-label">City</InputLabel>
+                      <Select
+                        id="zipCity"
+                        name="zipCity"
+                        labelId="city-label"
+                        label="City"
+                        value={values.city}
+                        error={Boolean(touched.city && errors.city)}
+                        helperText={touched.city && errors.city}
+                        required
+                        onChange={(e) => {
+                          setFieldValue("city", e.target.value);
+                        }}
+                        >
+                        {cities.map(({ label, value }) => (
+                            <MenuItem key={value} value={value}>
+                              {label}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                  </FormControl>
                 </div>
               </div>
             </div>

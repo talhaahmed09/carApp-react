@@ -1,6 +1,7 @@
 import {
   FormControl,
   FormControlLabel,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Radio,
@@ -205,7 +206,7 @@ export const Usermanagementcreate = (props) => {
             </div>
 
             <div className="w-[200px]">
-              <FormControl fullWidth>
+              <FormControl fullWidth error={touched.role && errors.role}>
                 <InputLabel id="demo-simple-select-label">Role</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -214,13 +215,12 @@ export const Usermanagementcreate = (props) => {
                   value={values.role}
                   onChange={(e) => setFieldValue("role", e.target.value)}
                   onBlur={handleBlur}
-                  error={touched.role && errors.role}
-                  helperText={touched.role && errors.role}
                 >
                   <MenuItem value="expert">Experts</MenuItem>
                   <MenuItem value="clerk">Clerks</MenuItem>
                   <MenuItem value="company-admin">Company admin</MenuItem>
                 </Select>
+                <FormHelperText>{touched.role && errors.role}</FormHelperText>
               </FormControl>
             </div>
           </div>
@@ -240,7 +240,11 @@ export const Usermanagementcreate = (props) => {
                     Company
                   </p>
                   <div className="w-[200px]">
-                    <FormControl fullWidth>
+                    <FormControl
+                      fullWidth
+                      error={touched.company_id && errors.company_id}
+                      helperText={touched.company_id && errors.company_id}
+                    >
                       <InputLabel id="demo-simple-select-label">
                         Select Company
                       </InputLabel>
@@ -253,8 +257,6 @@ export const Usermanagementcreate = (props) => {
                           setFieldValue("company_id", e.target.value)
                         }
                         onBlur={handleBlur}
-                        error={touched.company_id && errors.company_id}
-                        helperText={touched.company_id && errors.company_id}
                       >
                         {companylist.map(({ id, name }, index) => (
                           <MenuItem key={index} value={id} name={name}>
@@ -262,6 +264,9 @@ export const Usermanagementcreate = (props) => {
                           </MenuItem>
                         ))}
                       </Select>
+                      <FormHelperText>
+                        {touched.company_id && errors.company_id}
+                      </FormHelperText>
                     </FormControl>
                   </div>
                   {/* <TextField
@@ -284,7 +289,11 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Salution *
                   </p>
-                  <FormControl fullWidth>
+                  <FormControl
+                    fullWidth
+                    error={touched.salutation && errors.salutation}
+                    helperText={touched.salutation && errors.salutation}
+                  >
                     <InputLabel id="demo-simple-salutation-select-label">
                       Salutation *
                     </InputLabel>
@@ -305,6 +314,9 @@ export const Usermanagementcreate = (props) => {
                       <MenuItem value="MRS">MR's</MenuItem>
                       <MenuItem value="MS">MS</MenuItem>
                     </Select>
+                    <FormHelperText>
+                      {touched.salutation && errors.salutation}
+                    </FormHelperText>
                   </FormControl>
                 </div>
               </div>
@@ -384,7 +396,7 @@ export const Usermanagementcreate = (props) => {
                     onChange={handleChange}
                     label="Birthday"
                     InputLabelProps={{
-                      shrink: true
+                      shrink: true,
                     }}
                   />
                 </div>
@@ -586,55 +598,63 @@ export const Usermanagementcreate = (props) => {
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                     Country
                   </p>
-                  <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
+                  <FormControl
+                    fullWidth
+                    required
+                    error={Boolean(touched.country && errors.country)}
+                  >
                     <InputLabel id="country-label">Country</InputLabel>
-                      <Select
-                        id="country"
-                        name="country"
-                        labelId="country-label"
-                        label="Country"
-                        value={values.country}
-                        error={Boolean(touched.country && errors.country)}
-                        helperText={touched.country && errors.country}
-                        required
-                        onChange={(e) => {
-                          setFieldValue("country", e.target.value);
-                        }}
-                        >
-                        {!!countriesArr?.length &&
-                          countriesArr.map(({ label, value }) => (
-                            <MenuItem key={value} value={value}>
-                              {label}
-                            </MenuItem>
-                          ))}
-                      </Select>
+                    <Select
+                      id="country"
+                      name="country"
+                      labelId="country-label"
+                      label="Country"
+                      value={values.country}
+                      error={Boolean(touched.country && errors.country)}
+                      helperText={touched.country && errors.country}
+                      required
+                      onChange={(e) => {
+                        setFieldValue("country", e.target.value);
+                      }}
+                    >
+                      {!!countriesArr?.length &&
+                        countriesArr.map(({ label, value }) => (
+                          <MenuItem key={value} value={value}>
+                            {label}
+                          </MenuItem>
+                        ))}
+                    </Select>
                   </FormControl>
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="country">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
-                  <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
+                  <FormControl
+                    fullWidth
+                    required
+                    error={Boolean(touched.country && errors.country)}
+                  >
                     <InputLabel id="city-label">City</InputLabel>
-                      <Select
-                        id="zipCity"
-                        name="zipCity"
-                        labelId="city-label"
-                        label="City"
-                        value={values.city}
-                        error={Boolean(touched.city && errors.city)}
-                        helperText={touched.city && errors.city}
-                        required
-                        onChange={(e) => {
-                          setFieldValue("city", e.target.value);
-                        }}
-                        >
-                        {cities.map(({ label, value }) => (
-                            <MenuItem key={value} value={value}>
-                              {label}
-                            </MenuItem>
-                          ))}
-                      </Select>
+                    <Select
+                      id="zipCity"
+                      name="zipCity"
+                      labelId="city-label"
+                      label="City"
+                      value={values.city}
+                      error={Boolean(touched.city && errors.city)}
+                      helperText={touched.city && errors.city}
+                      required
+                      onChange={(e) => {
+                        setFieldValue("city", e.target.value);
+                      }}
+                    >
+                      {cities.map(({ label, value }) => (
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </FormControl>
                 </div>
               </div>

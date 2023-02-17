@@ -15,23 +15,31 @@ import { Createcompany } from "./Components/SuperAdmin/Pages/Company/Createcompa
 import ProtectedRoutes from "./ProtectedRoute";
 import AccessDenied from "./Components/SuperAdmin/Pages/AccessDenied/AccessDenied";
 import AuthUser from "./Components/SuperAdmin/Auth/AuthUser";
+import Usermanagment from "./Components/SuperAdmin/Pages/Usermanagement/Usermanagment";
+import RequireAuth from "./Components/RequireAuth";
+import MainDashboard from "./Components/SuperAdmin/Pages/Dashboard/MainDashboard";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/denied" element={<AccessDenied />} />
+        {/* <Route path="/denied" element={<AccessDenied />} /> */}
         {/* <Route path="/dashboard" element={<ProtectedRoutes roleRequired={"super-admin"} Component ={Dashbaord} /> } /> */}
-        <Route path="/dashboard" element={<Dashbaord />} />
+        <Route path ="/" element={<RequireAuth />}>
+          <Route path="/" element={<Dashbaord />} >
+            <Route path="/dashboard" element={<MainDashboard />} />
+            <Route path="companylist" element={<Companylist />} />
+            <Route exact path="companies/create" element={<Createcompany />} />
+            <Route exact path="companies/edit/:id" element={<Createcompany />} />
+            <Route path="vehicles" element={<Vehicles />} />
+            <Route path="createcompany" element={<Createcompany />} />
+            <Route path="users" element={<Usermanagment />} />
+          </Route>
+        </Route>
         <Route path="/address" render={() => <Addresses />} />
-        <Route path="/companylist" element={<Companylist />} />
-        <Route exact path="/companies/create" element={<Createcompany />} />
-        <Route exact path="/companies/edit/:id" element={<Createcompany />} />
-        <Route path="/vehicles" element={<Vehicles />} />
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/forgot" element={<Forgotpas />} />
         <Route path="/email" element={<Email />} />
-        <Route path="/createcompany" element={<Createcompany />} />
       </Routes>
       <ToastContainer
         position="bottom-right"

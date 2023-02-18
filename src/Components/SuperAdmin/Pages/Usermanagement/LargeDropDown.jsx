@@ -21,14 +21,14 @@ function renderRow(props) {
 
   if (dataSet.hasOwnProperty('group')) {
     return (
-      <ListSubheader key={dataSet.key} component="div" style={inlineStyle}>
+      <ListSubheader key={dataSet.key} component="div" style={inlineStyle} >
         {dataSet.group}
       </ListSubheader>
     );
   }
 
   return (
-    <Typography component="li" {...dataSet[0]} noWrap style={inlineStyle}>
+    <Typography component="li" {...dataSet[0]} noWrap style={inlineStyle} value={dataSet}>
      {dataSet}
     </Typography>
   );
@@ -120,7 +120,7 @@ const StyledPopper = styled(Popper)({
 });
 
 
-export default function Virtualize({cities}) {
+export default function Virtualize({cities, onChange}) {
   return (
     <Autocomplete
     fullWidth={true}
@@ -131,6 +131,7 @@ export default function Virtualize({cities}) {
       ListboxComponent={ListboxComponent}
       options={cities}
       renderInput={(params) => <TextField {...params} label="cities" />}
+      onChange= {onChange}
       // TODO: Post React 18 update - validate this conversion, look like a hidden bug
       renderGroup={(params) => params}
     />

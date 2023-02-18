@@ -205,6 +205,11 @@ export const Usermanagementcreate = (props) => {
     fetchListCompany();
   }, []);
 
+  const handleCityChange = e => {
+    console.log(e)
+      setFieldValue("city", e.target.textContent);
+  }
+
   return (
 
         <div>
@@ -677,7 +682,7 @@ export const Usermanagementcreate = (props) => {
                       renderOption={(option) => <div key={option.id}>{
                         option.key}</div>}
                     /> */}
-                    <Virtualize cities={cities} />
+                    <Virtualize cities={cities}    onChange={handleCityChange} />
                 </div>
               </div>
             </div>

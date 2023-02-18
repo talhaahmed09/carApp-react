@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -22,6 +23,26 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FormLabel } from "react-bootstrap";
 import { Country, City } from "country-state-city";
+import { FixedSizeList } from 'react-window';
+import Virtualize from "./LargeDropDown";
+
+const ITEM_SIZE = 36;
+const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
+
+const VirtualizedList = React.forwardRef(({ children, ...rest }, ref) => {
+  const itemCount = children.length;
+  return (
+    <FixedSizeList
+      ref={ref}
+      {...rest}
+      height={LIST_HEIGHT}
+      itemSize={ITEM_SIZE}
+      itemCount={itemCount}
+    >
+      {({ index, style }) => <div style={style} key={index}>{children[index]}</div>}
+    </FixedSizeList>
+  );
+});
 
 const countriesObj = Country.getAllCountries();
 
@@ -29,7 +50,6 @@ const getCities = (countryName) => {
   const code = countriesObj.find((item) => {
     return item.name === countryName;
   }).isoCode;
-  console.log("called");
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -44,6 +64,7 @@ const isValidUrl = (value) => {
     return false;
   }
 };
+
 
 const validationSchema = Yup.object().shape({
   salutation: Yup.string().required("Salutation is required"),
@@ -75,6 +96,8 @@ export const Usermanagementcreate = (props) => {
   const { http } = AuthUser();
   const getToken = AuthUser();
 
+  const listboxRef = React.useRef(null);
+
   const countriesArr = countriesObj.map((country) => {
     return { label: country.name, value: country.name };
   });
@@ -97,7 +120,7 @@ export const Usermanagementcreate = (props) => {
     fax: "",
     country: "Germany",
     mailbox: "",
-    city: "Aach",
+    city: "",
     street_no: "",
   };
 
@@ -183,10 +206,7 @@ export const Usermanagementcreate = (props) => {
   }, []);
 
   return (
-    <>
-      {usermanagementCheck ? (
-        <Usermanagment />
-      ) : (
+
         <div>
           <Toolbar />
 
@@ -630,17 +650,11 @@ export const Usermanagementcreate = (props) => {
               <div className="col-lg-6">
                 <div className="country">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
-                  <FormControl
-                    fullWidth
-                    required
-                    error={Boolean(touched.country && errors.country)}
-                  >
-                    <InputLabel id="city-label">City</InputLabel>
-                    <Select
+                    {/* <Autocomplete
                       id="zipCity"
                       name="zipCity"
                       labelId="city-label"
-                      label="City"
+                      options={cities}
                       value={values.city}
                       error={Boolean(touched.city && errors.city)}
                       helperText={touched.city && errors.city}
@@ -648,14 +662,22 @@ export const Usermanagementcreate = (props) => {
                       onChange={(e) => {
                         setFieldValue("city", e.target.value);
                       }}
-                    >
-                      {cities.map(({ label, value }) => (
-                        <MenuItem key={value} value={value}>
-                          {label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select a city"
+                          variant="outlined"
+                        />
+                      )}
+                      ListboxComponent={VirtualizedList}
+                      ListboxProps={{
+                        ref: listboxRef,
+                        style: { maxHeight: 200, overflow: 'auto' },
+                      }}
+                      renderOption={(option) => <div key={option.id}>{
+                        option.key}</div>}
+                    /> */}
+                    <Virtualize cities={cities} />
                 </div>
               </div>
             </div>
@@ -719,7 +741,5 @@ export const Usermanagementcreate = (props) => {
             </Button>
           </div>
         </div>
-      )}
-    </>
   );
 };

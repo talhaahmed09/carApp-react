@@ -26,6 +26,7 @@
     "react-select-country-list": "^2.2.3",
     "react-swipeable-views": "^0.14.0",
     "react-toastify": "^9.1.1",
+    "react-window": "^1.8.8",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"
   },

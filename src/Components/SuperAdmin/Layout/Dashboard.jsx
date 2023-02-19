@@ -21,24 +21,13 @@ import {
   Tabs,
   Toolbar,
 } from "@mui/material";
-
+import { Outlet, Link as RouterLink } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import logo from "../../../img/Oldtimer coach.png";
-import Addresses from "../Address/Addresses";
-import BasicPopover from "../../BasicPopover";
-import Vehicles from "../Vehicles/Vehicles";
-import MainDashboard from "../Dashboard/MainDashboard";
-import { useNavigate, Link as RouterLink, Outlet } from "react-router-dom";
-import { Company } from "../Company/Company";
-import Usermanagment from "../Usermanagement/Usermanagment";
-import Fdm from "../FDM/Fdm";
-import Setting from "../Settings/Setting";
-import { Createcompany } from "../Company/Createcompany";
-import AuthUser from "../../Auth/AuthUser";
-import Login from "../Login/Login";
-import SettingsRoot from "../Settings/SettingsRoot";
-import Mandatory from "../Mandatory/Mandatory";
+import logo from "../../img/Oldtimer coach.png";
+import BasicPopover from "../BasicPopover";
+import AuthUser from "../Auth/AuthUser";
+import Login from "../Pages/Login/Login";
 
 const drawerWidth = 250;
 
@@ -156,23 +145,24 @@ function Dashbaord(props) {
             label="Dashbaord"
             {...a11yProps(0)}
             style={{ display: "flex", alignItems: "start" }}
+            to="/dashboard"
           />
           <LinkTab
             label="Companies"
             {...a11yProps(1)}
             style={{ display: "flex", alignItems: "start" }}
-            to="/dashboard/companylist"
+            to="/companylist"
             // to='/companylist'
             // component={Routerlink}
           ></LinkTab>
           <LinkTab
-            to="/dashboard/users"
+            to="/users"
             label="User Management"
             {...a11yProps(2)}
             style={{ display: "flex", alignItems: "start" }}
           />
           <LinkTab
-            to="/dashboard/vehicles"
+            to="/vehicles"
             label="Vehicles Management"
             {...a11yProps(3)}
             style={{ display: "flex", alignItems: "start" }}

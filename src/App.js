@@ -9,7 +9,7 @@ import Vehicles from "./Components/SuperAdmin/Pages/Vehicles/Vehicles";
 import Login from "./Components/SuperAdmin/Pages/Login/Login";
 import Forgotpas from "./Components/SuperAdmin/Pages/Login/Forgotpas";
 import Email from "./Components/SuperAdmin/Pages/Email/Email";
-import Dashbaord from "./Components/SuperAdmin/Pages/Dashboard/Dashboard";
+import Dashbaord from "./Components/SuperAdmin/Layout/Dashboard";
 import { Createcompany } from "./Components/SuperAdmin/Pages/Company/Createcompany";
 
 import ProtectedRoutes from "./ProtectedRoute";
@@ -27,7 +27,7 @@ function App() {
         {/* <Route path="/dashboard" element={<ProtectedRoutes roleRequired={"super-admin"} Component ={Dashbaord} /> } /> */}
         <Route path ="/" element={<RequireAuth />}>
           <Route path="/" element={<Dashbaord />} >
-            <Route path="/dashboard" element={<MainDashboard />} />
+            <Route path="dashboard" element={<MainDashboard />} />
             <Route path="companylist" element={<Companylist />} />
             <Route exact path="companies/create" element={<Createcompany />} />
             <Route exact path="companies/edit/:id" element={<Createcompany />} />

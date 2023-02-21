@@ -1,6 +1,8 @@
 import axios from "axios";
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ERROR_MESSAGES } from "../../../utils/constant";
+import _isEmpty from "lodash/isEmpty";
+import { useState } from "react";
 
 export default function AuthUser() {
   const navigate = useNavigate();
@@ -14,8 +16,8 @@ export default function AuthUser() {
     const user_detail = JSON.parse(userString);
     return user_detail;
   };
-  const [token, setToken] = React.useState(getToken());
-  const [user, setUser] = React.useState(getUser());
+  const [token, setToken] = useState(getToken());
+  const [user, setUser] = useState(getUser());
 
   const saveToken = (token, user) => {
     localStorage.setItem("token", JSON.stringify(token));
@@ -24,26 +26,71 @@ export default function AuthUser() {
     setUser(user);
     // navigate(`/dashboard`);
   };
-  const logout = () =>{
-    localStorage.clear()
+  const logout = () => {
+    localStorage.clear();
     navigate(`/`);
+  };
 
-  }
-
-  const http = axios.create({
+  const httpService = axios.create({
     baseURL: "https://carapp.taswog.com/api",
-    headers: {
-        "Content-type" : "application/json",
-      "Authorization" : `Bearer ${token}`
-    },
-    
+    timeout: 300000,
   });
+  httpService.interceptors.request.use(
+    (config) => {
+      if (token) {
+        config.headers["Authorization"] = "Bearer " + token;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  // response interceptor
+  httpService.interceptors.response.use(
+    (response) => {
+      return response.data;
+    },
+    (error) => {
+      if (error.response) {
+        if (error.response.status === 401) {
+          logout();
+          return Promise.reject();
+        }
+        if (!_isEmpty(error, "response") && error.response.status >= 400) {
+          const errorMsg = ERROR_MESSAGES[error.response.status];
+          const errorMsgDefault =
+            errorMsg || "Something Went Wrong, Please try again later";
+
+          const errorObj = error.response.data || errorMsgDefault;
+          const errMessage = decodeURI(errorObj);
+
+          if (!errMessage.includes("TicketId:")) {
+            Notification.error({
+              title: "Error",
+              message: errMessage,
+              duration: 5 * 1000,
+            });
+          }
+          return Promise.reject(errMessage);
+        }
+      }
+      const err = error.message ? error.message : JSON.stringify(error);
+      Notification.error({
+        title: "Error",
+        message: err,
+        duration: 5 * 1000,
+      });
+      return Promise.reject(err);
+    }
+  );
   return {
     setToken: saveToken,
     token,
     user,
     getToken,
-    http,
-    logout
+    httpService,
+    logout,
   };
 }

@@ -1,6 +1,10 @@
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ERROR_MESSAGES } from "../../../utils/constant";
+import _isEmpty from "lodash/isEmpty";
+import { useState } from "react";
+import service from "../../../services/AuthService";
 
 export default function AuthUser() {
   const navigate = useNavigate();
@@ -27,23 +31,20 @@ export default function AuthUser() {
   const logout = () =>{
     localStorage.clear()
     navigate(`/`);
-
-  }
-
-  const http = axios.create({
-    baseURL: "https://carapp.taswog.com/api",
-    headers: {
-        "Content-type" : "application/json",
-      "Authorization" : `Bearer ${token}`
-    },
-    
-  });
+  };
+  const error_callback = (error) => {
+    if (error.response.status === 401) {
+      logout();
+      return Promise.reject();
+    }
+  };
+  const httpService = service(token, error_callback);
   return {
     setToken: saveToken,
     token,
     user,
     getToken,
-    http,
-    logout
+    http: httpService,
+    logout,
   };
 }

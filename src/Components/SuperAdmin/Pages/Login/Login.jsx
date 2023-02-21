@@ -17,6 +17,7 @@ const Login = () => {
   const [msgErr, setMsg] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
+
   const submitForm = () => {
     setLoading(true);
 
@@ -26,7 +27,7 @@ const Login = () => {
       .then((res) => {
         toast.success('login successfully')
         setLoading(false);
-        setToken(res.data.success.token, res.data.success.user);
+        setToken(res.success.token, res.success.user);
         navigate(`/dashboard`);
 
         // if (res.data.success.user.myRole[0] === "super-admin") {

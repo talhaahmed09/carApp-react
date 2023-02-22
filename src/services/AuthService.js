@@ -3,7 +3,6 @@ import _isEmpty from "lodash/isEmpty";
 import { ERROR_MESSAGES } from "../utils/constant";
 
 const service = function (token = null, error_callback) {
-  if (!token) return;
   const authService = httpService(token);
   // response interceptor
   authService.interceptors.response.use(

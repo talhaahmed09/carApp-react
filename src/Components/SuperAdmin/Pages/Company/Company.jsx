@@ -82,36 +82,47 @@ export function Company() {
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
 
-  React.useEffect(() => {
-    fetchListCompany();
-  }, []);
-
   const [compCheck, setCompCheck] = useState(false);
-  const fetchListCompany = async () => {
+  const fetchListCompany = async (params) => {
     // api call
     setLoading(true);
-    let res = await getAllCompanies();
-    setCompanylist(res.data.responseMessage);
-
+    let res = await getAllCompanies(params);
+    setCompanylist(res.objData.data);
+    setCount(res.objData.total);
     setLoading(false);
   };
 
-  // pagination
-  let [page, setPage] = useState(0);
   const PER_PAGE = 5;
-  const [rowsPerPage, setRowsPerPage] = useState(PER_PAGE);
+  // pagination
+  let [controller, setController] = useState({
+    page: 1,
+    per_page: PER_PAGE,
+  });
+  const [count , setCount] = React.useState(0);
 
-  const count = companylist.length
-  const _DATA = usePagination(companylist, rowsPerPage);
+  
+  React.useEffect(() => {
+    fetchListCompany({
+      page: controller.page,
+      size: controller.per_page,
+      // @todo: filters for asc and desc
+    })
+  }, [controller]);
+  // const _DATA = usePagination(companylist, rowsPerPage);
 
   const paginationHandler = (e,p) => {
-    setPage(p);
-    _DATA.jump(p);
+    setController({
+      ...controller,
+      page: p
+    });
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setController({
+      ...controller,
+      rowsPerPage: parseInt(event.target.value, 10),
+      page: 0
+    });
   };
 
   return (
@@ -170,7 +181,7 @@ export function Company() {
                 ) : (
                   <TableBody>
                     {companylist &&
-                      _DATA.currentData().map((data, index) => {
+                      companylist.map((data, index) => {
                         return (
                           <TableRow
                             key={data.id}
@@ -213,11 +224,11 @@ export function Company() {
                   variant="outlined"
                   shape="rounded"
                   onPageChange={paginationHandler}
-                  rowsPerPage={rowsPerPage}
+                  rowsPerPage={controller.per_page}
                   SelectProps={{sx: {mb: '1rem'}}}
-                  page={page}
+                  page={controller.page}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[5, 10, 15, 20]}
                   ActionsComponent={TablePaginationActions}
                 />
                 {/* <Pagination

@@ -10,6 +10,7 @@ const httpService = function (token = null) {
       if (token !== null && typeof token === 'string') {
         config.headers["Authorization"] = "Bearer " + token;
       }
+      config.headers['Accept'] = 'application/json';
       return config;
     },
     (error) => {

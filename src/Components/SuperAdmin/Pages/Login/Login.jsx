@@ -8,6 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import AuthUser from "../../Auth/AuthUser";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import {toast} from 'react-toastify';
+import { post } from "../../../../http_request";
 const Login = () => {
   const navigate = useNavigate();
 
@@ -22,8 +23,7 @@ const Login = () => {
     setLoading(true);
 
     // api call
-    http
-      .post("/login", { email: email, password: password })
+    post("/login", { email: email, password: password })
       .then((res) => {
         toast.success('login successfully')
         setLoading(false);

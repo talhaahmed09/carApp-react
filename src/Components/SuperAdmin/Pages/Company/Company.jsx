@@ -20,6 +20,7 @@ import AuthUser from "../../Auth/AuthUser";
 import { Pageloader } from "../Page loader/Pageloader";
 import usePagination from "../Pagination/Pagination";
 import SelectPopover from "../SelectPopover";
+import { getAllCompanies } from "../../../../apis/company";
 
 function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -89,7 +90,7 @@ export function Company() {
   const fetchListCompany = async () => {
     // api call
     setLoading(true);
-    let res = await http.get("/company");
+    let res = await getAllCompanies();
     setCompanylist(res.data.responseMessage);
 
     setLoading(false);

@@ -16,9 +16,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { CreateBtn } from "../../../Buttons";
 import { Createcompany } from "./Createcompany";
-import AuthUser from "../../Auth/AuthUser";
 import { Pageloader } from "../Page loader/Pageloader";
-import usePagination from "../Pagination/Pagination";
 import SelectPopover from "../SelectPopover";
 import { getAllCompanies } from "../../../../apis/company";
 
@@ -76,53 +74,52 @@ function TablePaginationActions(props) {
 }
 
 export function Company() {
-  const { http } = AuthUser();
   const [companylist, setCompanylist] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
-
+  const [count , setCount] = React.useState(0);
   const [compCheck, setCompCheck] = useState(false);
-  const fetchListCompany = async (params) => {
+
+  const fetchListCompany = async () => {
     // api call
+    const params = {
+      
+      page: controller.page,
+      size: controller.per_page,
+    }
     setLoading(true);
-    let res = await getAllCompanies(params);
-    setCompanylist(res.objData.data);
-    setCount(res.objData.total);
+    let {objData} = await getAllCompanies(params);
+    setCompanylist(objData.data);
+    setCount(objData.total);
     setLoading(false);
   };
 
-  const PER_PAGE = 5;
   // pagination
   let [controller, setController] = useState({
-    page: 1,
-    per_page: PER_PAGE,
+    page: 0,
+    per_page: 5,
   });
-  const [count , setCount] = React.useState(0);
+
 
   
   React.useEffect(() => {
-    fetchListCompany({
-      page: controller.page,
-      size: controller.per_page,
-      // @todo: filters for asc and desc
-    })
+    fetchListCompany()
   }, [controller]);
   // const _DATA = usePagination(companylist, rowsPerPage);
 
   const paginationHandler = (e,p) => {
-    setController({
-      ...controller,
+    setController(prev => ({
+      ...prev,
       page: p
-    });
+    }));
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setController({
-      ...controller,
-      rowsPerPage: parseInt(event.target.value, 10),
-      page: 0
-    });
+    setController( prev => ({
+      ...prev,
+      per_page: parseInt(event.target.value, 10)
+    }));
   };
 
   return (
@@ -231,12 +228,6 @@ export function Company() {
                   rowsPerPageOptions={[5, 10, 15, 20]}
                   ActionsComponent={TablePaginationActions}
                 />
-                {/* <Pagination
-                  count={count}
-                  variant="outlined"
-                  shape="rounded"
-                  onChange={paginationHandler}
-                /> */}
               </div>
             ) : null}
           </div>

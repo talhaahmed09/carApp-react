@@ -21,7 +21,7 @@ export default function AuthUser() {
   };
   const logout = () => {
     localStorage.clear();
-    navigate(`/`);
+    window.location(`/`);
   };
   const error_callback = (error) => {
     if (error.response.status === 401) {

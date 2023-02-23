@@ -44,9 +44,11 @@ const Login = () => {
         toast.error('Invalid email or password')
         if (err.response.status === 401) {
           setMsg("Unauthorized");
-        setLoading(false);
         }
-      });
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   };
 
   return (

@@ -123,10 +123,7 @@ export function Company() {
   };
 
   return (
-    <>
-      {compCheck || editIndex != null ? (
-        <Createcompany editIndex={editIndex} editItem={editItem} />
-      ) : (
+  
         <>
           <div style={{ height: 400, width: "100%" }}>
           <Toolbar />
@@ -232,7 +229,5 @@ export function Company() {
             ) : null}
           </div>
         </>
-      )}
-    </>
   );
 }

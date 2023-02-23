@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ERROR_MESSAGES } from "../../../utils/constant";
 import _isEmpty from "lodash/isEmpty";
@@ -18,8 +17,8 @@ export default function AuthUser() {
     const user_detail = JSON.parse(userString);
     return user_detail;
   };
-  const [token, setToken] = React.useState(getToken());
-  const [user, setUser] = React.useState(getUser());
+  const [token, setToken] = useState(getToken());
+  const [user, setUser] = useState(getUser());
 
   const saveToken = (token, user) => {
     localStorage.setItem("token", JSON.stringify(token));
@@ -28,8 +27,8 @@ export default function AuthUser() {
     setUser(user);
     // navigate(`/dashboard`);
   };
-  const logout = () =>{
-    localStorage.clear()
+  const logout = () => {
+    localStorage.clear();
     navigate(`/`);
   };
   const error_callback = (error) => {

@@ -13,8 +13,9 @@ import { matchIsValidTel, MuiTelInput } from "mui-tel-input";
 import { Country, City } from "country-state-city";
 import { useMemo } from "react";
 import FormControl from "@mui/material/FormControl";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { get } from "../../../../http_request";
+import { createCompany, getCompanyDetail } from "../../../../apis/company";
 
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
@@ -51,6 +52,7 @@ const formValidationSchema = Yup.object().shape({
 
 export const Createcompany = (props) => {
   const { id } = useParams();
+  const navigate = useNavigate()
   const countriesArr = countriesObj.map((country) => {
     return { label: country.name, value: country.name };
   });
@@ -58,7 +60,7 @@ export const Createcompany = (props) => {
   const [company, setCompany] = useState([])
 
   const getCompanyDetails = async () => {
-    const { objData: {content} } = await get(`/company/${id}`)
+    const { objData: {content} } = await getCompanyDetail(id)
     setValues({
       name: content.name,
       director: content.director,
@@ -125,8 +127,7 @@ export const Createcompany = (props) => {
     return cities;
   }, [values.country]);
   // Handle Cancel Button
-  const handleSave = () => {
-    console.log(values);
+  const handleSave = async () => {
     setTouched({
       ...Object.keys(initialValues).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
@@ -134,17 +135,13 @@ export const Createcompany = (props) => {
       ),
     });
     if (!isValid) {
-      console.log(values);
-      return console.log("Hello dumb mf");
+      // toast.error(errors)
     }
-    console.log(values, touched);
-  //   http
-  //     .post(`/company`, values)
-  //     .then((res) => {
-  //       toast.success("create sucessfully");
-  //       setCompanyCheck(!companyCheck);
-  //     })
-  //     .catch((err) => toast.error(err.message));
+ const res =  await  createCompany(values)
+ if(res) {
+  navigate('/companyList')
+ }
+     
   };
   const handleCancel = () => {
     setCompanyCheck(!companyCheck);

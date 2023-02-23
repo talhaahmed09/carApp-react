@@ -426,6 +426,10 @@ export const Createcompany = (props) => {
                     name="country"
                     labelId="country-label"
                     label="Country"
+                    value={values.country}
+                    error={Boolean(touched.country && errors.country)}
+                    helperText={touched.country && errors.country}
+                    required
                     >
                     {countriesArr?.length &&
                       countriesArr.map(({ label, value }) => (

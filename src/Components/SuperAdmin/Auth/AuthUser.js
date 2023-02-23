@@ -14,15 +14,14 @@ export default function AuthUser() {
     const user_detail = JSON.parse(userString);
     return user_detail;
   };
-
   const saveToken = (token, user) => {
     localStorage.setItem("token", JSON.stringify(token));
     localStorage.setItem("user", JSON.stringify(user));
     // navigate(`/dashboard`);
   };
-  const logout = () =>{
-    localStorage.clear()
-    window.location.replace(`/`);
+  const logout = () => {
+    localStorage.clear();
+    navigate(`/`);
   };
   const error_callback = (error) => {
     if (error.response.status === 401) {

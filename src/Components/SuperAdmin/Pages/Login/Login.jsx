@@ -8,9 +8,10 @@ import { useNavigate, Link } from "react-router-dom";
 import AuthUser from "../../Auth/AuthUser";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
 import {toast} from 'react-toastify';
+import useAuth from "../../../../hooks/useAuth";
 const Login = () => {
   const navigate = useNavigate();
-
+  const {setAuth} = useAuth();
   const { http, setToken } = AuthUser();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();
@@ -27,6 +28,7 @@ const Login = () => {
         toast.success('login successfully')
         setLoading(false);
         setToken(res.data.success.token, res.data.success.user);
+        setAuth({authorized: true, user: res.data.success.user})
         navigate(`/dashboard`);
 
         // if (res.data.success.user.myRole[0] === "super-admin") {

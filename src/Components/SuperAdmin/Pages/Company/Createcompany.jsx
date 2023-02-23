@@ -13,6 +13,7 @@ import { matchIsValidTel, MuiTelInput } from "mui-tel-input";
 import { Country, City } from "country-state-city";
 import { useMemo } from "react";
 import FormControl from "@mui/material/FormControl";
+import { createCompany } from "../../../../apis/company";
 
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
@@ -117,7 +118,6 @@ export const Createcompany = (props) => {
   }, [values.country]);
   // Handle Cancel Button
   const handleSave = () => {
-    console.log(values);
     setTouched({
       ...Object.keys(initialValues).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
@@ -125,12 +125,9 @@ export const Createcompany = (props) => {
       ),
     });
     if (!isValid) {
-      console.log(values);
-      return console.log("Hello dumb mf");
+      // toast.error(errors)
     }
-    console.log(values, touched);
-    http
-      .post(`/company`, values)
+    createCompany(values)
       .then((res) => {
         toast.success("create sucessfully");
         setCompanyCheck(!companyCheck);

@@ -16,10 +16,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { CreateBtn } from "../../../Buttons";
 import { Createcompany } from "./Createcompany";
-import AuthUser from "../../Auth/AuthUser";
 import { Pageloader } from "../Page loader/Pageloader";
-import usePagination from "../Pagination/Pagination";
 import SelectPopover from "../SelectPopover";
+import { getAllCompanies } from "../../../../apis/company";
 
 function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -75,49 +74,56 @@ function TablePaginationActions(props) {
 }
 
 export function Company() {
-  const { http } = AuthUser();
   const [companylist, setCompanylist] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
-
-  React.useEffect(() => {
-    fetchListCompany();
-  }, []);
-
+  const [count , setCount] = React.useState(0);
   const [compCheck, setCompCheck] = useState(false);
+
   const fetchListCompany = async () => {
     // api call
+    const params = {
+      
+      page: controller.page,
+      size: controller.per_page,
+    }
     setLoading(true);
-    let res = await http.get("/company");
-    setCompanylist(res.data.responseMessage);
-
+    let {objData} = await getAllCompanies(params);
+    setCompanylist(objData.data);
+    setCount(objData.total);
     setLoading(false);
   };
 
   // pagination
-  let [page, setPage] = useState(0);
-  const PER_PAGE = 5;
-  const [rowsPerPage, setRowsPerPage] = useState(PER_PAGE);
+  let [controller, setController] = useState({
+    page: 0,
+    per_page: 5,
+  });
 
-  const count = companylist.length
-  const _DATA = usePagination(companylist, rowsPerPage);
+
+  
+  React.useEffect(() => {
+    fetchListCompany()
+  }, [controller]);
+  // const _DATA = usePagination(companylist, rowsPerPage);
 
   const paginationHandler = (e,p) => {
-    setPage(p);
-    _DATA.jump(p);
+    setController(prev => ({
+      ...prev,
+      page: p
+    }));
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setController( prev => ({
+      ...prev,
+      per_page: parseInt(event.target.value, 10)
+    }));
   };
 
   return (
-    <>
-      {compCheck || editIndex != null ? (
-        <Createcompany editIndex={editIndex} editItem={editItem} />
-      ) : (
+  
         <>
           <div style={{ height: 400, width: "100%" }}>
           <Toolbar />
@@ -169,7 +175,7 @@ export function Company() {
                 ) : (
                   <TableBody>
                     {companylist &&
-                      _DATA.currentData().map((data, index) => {
+                      companylist.map((data, index) => {
                         return (
                           <TableRow
                             key={data.id}
@@ -212,24 +218,16 @@ export function Company() {
                   variant="outlined"
                   shape="rounded"
                   onPageChange={paginationHandler}
-                  rowsPerPage={rowsPerPage}
+                  rowsPerPage={controller.per_page}
                   SelectProps={{sx: {mb: '1rem'}}}
-                  page={page}
+                  page={controller.page}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[5, 10, 15, 20]}
                   ActionsComponent={TablePaginationActions}
                 />
-                {/* <Pagination
-                  count={count}
-                  variant="outlined"
-                  shape="rounded"
-                  onChange={paginationHandler}
-                /> */}
               </div>
             ) : null}
           </div>
         </>
-      )}
-    </>
   );
 }

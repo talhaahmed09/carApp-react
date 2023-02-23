@@ -7,7 +7,7 @@ const RequireAuth = (props) => {
     const location = useLocation();
 
   return (
-    auth?.authorized ? <Outlet /> : <Outlet /> //auth?.user ? <Navigate to="/unauthorized" state={{from: location}} replace/> : <Navigate to="/login" state={{from: location}} replace/> 
+    auth?.user ? <Outlet /> :  <Navigate to="/login" state={{from: location}} replace/> 
   )
 }
 

@@ -79,7 +79,7 @@ props.SetState(props.state.filter((data) => data.id != props.id));
             style={{ width: "100%", color: "black" }}
 
           >
-            <Link to={`companies/edit/${props.id}`}>
+            <Link to={`/company/edit/${props.id}`}>
             Edit
             </Link>
           </Button>

@@ -21,24 +21,13 @@ import {
   Tabs,
   Toolbar,
 } from "@mui/material";
-
+import { Outlet, Link as RouterLink } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import logo from "../../../img/Oldtimer coach.png";
-import Addresses from "../Address/Addresses";
-import BasicPopover from "../../BasicPopover";
-import Vehicles from "../Vehicles/Vehicles";
-import MainDashboard from "../Dashboard/MainDashboard";
-import { useNavigate, Link as Routerlink } from "react-router-dom";
-import { Company } from "../Company/Company";
-import Usermanagment from "../Usermanagement/Usermanagment";
-import Fdm from "../FDM/Fdm";
-import Setting from "../Settings/Setting";
-import { Createcompany } from "../Company/Createcompany";
-import AuthUser from "../../Auth/AuthUser";
-import Login from "../Login/Login";
-import SettingsRoot from "../Settings/SettingsRoot";
-import Mandatory from "../Mandatory/Mandatory";
+import logo from "../../img/Oldtimer coach.png";
+import BasicPopover from "../BasicPopover";
+import AuthUser from "../Auth/AuthUser";
+import Login from "../Pages/Login/Login";
 
 const drawerWidth = 250;
 
@@ -117,6 +106,15 @@ function Dashbaord(props) {
     setValueTab(newValue);
   };
 
+  function LinkTab(props) {
+    return (
+      <Tab
+        component={RouterLink}
+        {...props}
+      />
+    );
+  }
+  
   // side bar
   const drawer = (
     <div className="">
@@ -126,13 +124,12 @@ function Dashbaord(props) {
         <Tabs
           orientation="vertical"
           variant="scrollable"
-          value={valueTab}
-          onChange={handleChangeTabs}
+          value={false}
           aria-label="Vertical tabs example"
           // sx={{ borderRight: 1, borderColor: "divider" }}
           sx={{
-            "& button:hover": { background: "#F4EAE4" },
-            "& button.Mui-selected": {
+            "& button:hover,a:hover": { background: "#F4EAE4" },
+            "& button.Mui-selected,a.Mui-selected": {
               background: "#F4EAE4",
               color: "#5A4A42",
             },
@@ -148,20 +145,24 @@ function Dashbaord(props) {
             label="Dashbaord"
             {...a11yProps(0)}
             style={{ display: "flex", alignItems: "start" }}
+            to="/dashboard"
           />
-          <Tab
+          <LinkTab
             label="Companies"
             {...a11yProps(1)}
             style={{ display: "flex", alignItems: "start" }}
+            to="/companylist"
             // to='/companylist'
             // component={Routerlink}
-          ></Tab>
-          <Tab
+          ></LinkTab>
+          <LinkTab
+            to="/users"
             label="User Management"
             {...a11yProps(2)}
             style={{ display: "flex", alignItems: "start" }}
           />
-          <Tab
+          <LinkTab
+            to="/vehicles"
             label="Vehicles Management"
             {...a11yProps(3)}
             style={{ display: "flex", alignItems: "start" }}
@@ -344,7 +345,10 @@ function Dashbaord(props) {
         </Box>
 
         <div className="w-100 ">
-          <TabPanel value={valueTab} index={0}>
+          <TabPanel>
+            <Outlet />
+          </TabPanel>
+          {/* <TabPanel value={valueTab} index={0}>
             <MainDashboard />
           </TabPanel>
           <TabPanel value={valueTab} index={1}>
@@ -364,7 +368,7 @@ function Dashbaord(props) {
           </TabPanel>
           <TabPanel value={valueTab} index={6}>
             <SettingsRoot />
-          </TabPanel>
+          </TabPanel> */}
         </div>
       </Box>
     </div>

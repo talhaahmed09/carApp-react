@@ -11,7 +11,7 @@ import {toast} from 'react-toastify';
 import { post } from "../../../../http_request";
 const Login = () => {
   const navigate = useNavigate();
-
+  const {setAuth} = useAuth();
   const { http, setToken } = AuthUser();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();

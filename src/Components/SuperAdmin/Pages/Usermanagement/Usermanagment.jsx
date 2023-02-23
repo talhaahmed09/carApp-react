@@ -16,6 +16,7 @@ import { Usermanagementcreate } from "./Usermanagementcreate";
 import AuthUser from "../../Auth/AuthUser";
 import usePagination from "../Pagination/Pagination";
 import { PageloaderAll } from "../Page loader/Pageloader";
+import { getUsers } from "../../../../services/user";
 
 export default function Usermanagment() {
   const [UserCheck, setUserCheck] = React.useState(false);
@@ -28,7 +29,7 @@ export default function Usermanagment() {
   const fetchListUser = async (data) => {
     // api call
     setLoading(true);
-    let res = await http.get("/user");
+    let res = await getUsers();
 
     if (res.data.responseStatus === 200) {
       setUserlist(res.data.responseMessage);

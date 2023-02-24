@@ -19,10 +19,10 @@ import { createCompany, getCompanyDetail } from "../../../../apis/company";
 
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
-  const code = countriesObj.find((item) => {
+  const country = countriesObj.find((item) => {
     return item.name === countryName;
-  }).isoCode;
-  console.log("called");
+  });
+  const code = country !== undefined ? country.isoCode : "DE"
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -81,7 +81,9 @@ export const Createcompany = (props) => {
 
  
   useEffect(() => {
-    getCompanyDetails()
+    if(props.edit){
+      getCompanyDetails()
+    }
     if (typeof content !== "undefined") {
     
     } else {
@@ -433,6 +435,9 @@ export const Createcompany = (props) => {
                     labelId="country-label"
                     label="Country"
                     value={values.country}
+                    onChange={(e) => {
+                      setFieldValue("country", e.target.value);
+                    }}
                     error={Boolean(touched.country && errors.country)}
                     helperText={touched.country && errors.country}
                     required

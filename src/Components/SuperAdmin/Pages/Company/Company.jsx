@@ -19,6 +19,7 @@ import { Createcompany } from "./Createcompany";
 import { Pageloader } from "../Page loader/Pageloader";
 import SelectPopover from "../SelectPopover";
 import { getAllCompanies } from "../../../../apis/company";
+import { Link } from "react-router-dom";
 
 function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -79,7 +80,6 @@ export function Company() {
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
   const [count , setCount] = React.useState(0);
-  const [compCheck, setCompCheck] = useState(false);
 
   const fetchListCompany = async () => {
     // api call
@@ -154,7 +154,7 @@ export function Company() {
                 <CreateBtn
                   name="Create"
                   icon={<AddIcon />}
-                  onClick={() => setCompCheck(!compCheck)}
+                  btnProps={{component: Link, to: "../company/create", replace: true}}
                 />
               </div>
             </div>

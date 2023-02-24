@@ -11,6 +11,7 @@ export const CreateBtn = (props) => {
         diplay: "flex",
         alignItems: "center",
       }}
+      {... props.btnProps}
     >
       {props.name}
       {props.icon}

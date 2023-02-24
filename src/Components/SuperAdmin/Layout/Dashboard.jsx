@@ -141,7 +141,7 @@ function Dashbaord(props) {
             },
           }}
         >
-          <Tab
+          <LinkTab
             label="Dashbaord"
             {...a11yProps(0)}
             style={{ display: "flex", alignItems: "start" }}

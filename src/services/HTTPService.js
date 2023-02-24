@@ -2,7 +2,7 @@ import axios from "axios";
 
 const httpService = function (token = null) {
   const service = axios.create({
-    baseURL: "http://carapp.softsprints.com/api/",
+    baseURL: "https://carapp.softsprints.com/api/",
     timeout: 300000,
   });
   service.interceptors.request.use(

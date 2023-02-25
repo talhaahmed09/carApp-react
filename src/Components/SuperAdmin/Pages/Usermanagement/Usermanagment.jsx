@@ -1,5 +1,4 @@
 import * as React from "react";
-import react, { useState } from "react";
 import { Toolbar } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import AddIcon from "@mui/icons-material/Add";
@@ -10,31 +9,43 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import TablePagination from "@mui/material/TablePagination";
 import SelectPopover from "../SelectPopover";
 import { CreateBtn } from "../../../Buttons";
 import { Usermanagementcreate } from "./Usermanagementcreate";
 import AuthUser from "../../Auth/AuthUser";
 import usePagination from "../Pagination/Pagination";
 import { PageloaderAll } from "../Page loader/Pageloader";
-import { getUsers } from "../../../../services/user";
+import { getAllUsers } from "../../../../apis/user"
 import { useNavigate } from "react-router-dom";
+import TablePaginationActions from "../../shared/TablePaginationAction";
+import { getAllCompanies } from "../../../../apis/company";
 
 export default function Usermanagment() {
   const [UserCheck, setUserCheck] = React.useState(false);
   const { http } = AuthUser();
   const navigate = useNavigate();
-  const [Userlist, setUserlist] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [editItem, setEditItem] = useState();
+  const [userList, setUserList] = React.useState([]);
+  const [editIndex, setEditIndex] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [editItem, setEditItem] = React.useState();
+  const [count, setCount] = React.useState(0);
+  const [controller, setController] = React.useState({
+    page: 0,
+    per_page: 5,
+  });
 
   const fetchListUser = async (data) => {
     // api call
     setLoading(true);
-    let res = await getUsers();
-
-    if (res.data.responseStatus === 200) {
-      setUserlist(res.data.responseMessage);
+    const params = {
+      page: controller.page + 1,
+      size: controller.per_page,
+    };
+    let res = await getAllUsers(params);
+    if (res.objData) {
+      setUserList(res.objData.data);
+      setCount(res.objData.total);
       fetchListCompany();
     }
     setLoading(false);
@@ -42,34 +53,43 @@ export default function Usermanagment() {
   // console.log("Userlist:", Userlist[0].first_name);
   React.useEffect(() => {
     fetchListUser();
-  }, []);
-  const [companylist, setCompanylist] = useState([]);
+  }, [controller]);
+  const [companylist, setCompanylist] = React.useState([]);
 
   const fetchListCompany = async () => {
     // api call
 
-    let res = await http.get("/company");
-    setCompanylist((prev) => res.data.responseMessage);
+    let res = await getAllCompanies();
+    if(!res.objData){
+      setCompanylist(res.objData.data);
+    } else {
+      setCompanylist([])
+    }
   };
 
   const getCompanyName = (id) => {
     const company = companylist.find((item) => item.id === Number(id));
     return company ? company.name : "-";
   };
-  // pagination
-  let [page, setPage] = useState(1);
-  const PER_PAGE = 10;
 
-  const count = Math.ceil(Userlist.length / PER_PAGE);
-  const _DATA = usePagination(Userlist, PER_PAGE);
-
-  const paginationHandler = (e, p) => {
-    setPage(p);
-    _DATA.jump(p);
-  };
   const handleEdit = (id) => {
     navigate(`/user/${id}`);
   };
+
+  const paginationHandler = (e, p) => {
+    setController((prev) => ({
+      ...prev,
+      page: p,
+    }));
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setController((prev) => ({
+      ...prev,
+      per_page: parseInt(event.target.value, 10),
+    }));
+  };
+
   return (
     <>
       {UserCheck || editIndex != null ? (
@@ -111,8 +131,8 @@ export default function Usermanagment() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Userlist &&
-                      _DATA.currentData().map((data, index) => {
+                    {userList &&
+                      userList.map((data, index) => {
                         return (
                           <TableRow key={data.id}>
                             <TableCell component="th" scope="row">
@@ -135,8 +155,8 @@ export default function Usermanagment() {
                               <SelectPopover
                                 {...data}
                                 apiName="user"
-                                SetState={setUserlist}
-                                state={Userlist}
+                                SetState={setUserList}
+                                state={userList}
                                 setEditIndex={setEditIndex}
                                 index={index}
                                 setEditItem={setEditItem}
@@ -151,13 +171,19 @@ export default function Usermanagment() {
               )}
             </TableContainer>
             <div className="mt-3 flex justify-end">
-              <Pagination
-                count={count}
-                variant="outlined"
-                shape="rounded"
-                onChange={paginationHandler}
-              />
-            </div>
+            <TablePagination
+              count={count}
+              variant="outlined"
+              shape="rounded"
+              onPageChange={paginationHandler}
+              rowsPerPage={controller.per_page}
+              SelectProps={{ sx: { mb: "1rem" } }}
+              page={controller.page}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10, 15, 20]}
+              ActionsComponent={TablePaginationActions}
+            />
+          </div>
           </div>
         </>
       )}

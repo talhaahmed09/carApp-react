@@ -90,7 +90,7 @@ export function Company() {
   const fetchListCompany = async () => {
     // api call
     const params = {
-      page: controller.page,
+      page: controller.page + 1,
       size: controller.per_page,
     };
     setLoading(true);

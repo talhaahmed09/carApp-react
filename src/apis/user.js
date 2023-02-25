@@ -1,11 +1,11 @@
 import { remove } from "lodash";
 import { get, post } from "../http_request";
 
-const getAllUsers = ({ size, page }) => {
+export const getAllUsers = ({ size, page }) => {
   return get(`user?size=${size}&page=${page}`);
 };
 
-const getUserDetails = (id) => {
+export const getUserDetails = (id) => {
   return get(`/user/${id}`);
 };
 

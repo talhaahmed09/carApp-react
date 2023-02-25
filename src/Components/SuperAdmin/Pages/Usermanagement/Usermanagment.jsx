@@ -73,7 +73,7 @@ export default function Usermanagment() {
   };
 
   const handleEdit = (id) => {
-    navigate(`/user/${id}`);
+    navigate(`/users/edit/${id}`);
   };
 
   const paginationHandler = (e, p) => {

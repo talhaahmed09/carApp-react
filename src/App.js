@@ -43,8 +43,8 @@ function App() {
             <Route path="vehicles" element={<Vehicles />} />
             <Route path="createcompany" element={<Createcompany />} />
             <Route path="users" element={<Usermanagment />} />
-            <Route path="user/create" element={<Usermanagementcreate />} />
-            <Route path="user/edit/:id" element={<Usermanagementcreate />} />
+            <Route path="users/create" element={<Usermanagementcreate />} />
+            <Route path="users/edit/:id" element={<Usermanagementcreate />} />
           </Route>
         </Route>
         <Route path="/address" render={() => <Addresses />} />

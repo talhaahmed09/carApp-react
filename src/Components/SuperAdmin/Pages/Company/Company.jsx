@@ -105,8 +105,8 @@ export function Company() {
     const query = new FormData(e.target).get("query")
     setLoading(true);
     let { objData } = await search(query);
-    setCompanylist(objData.data);
-    setCount(objData.data.length);
+    setCompanylist(objData);
+    setCount(objData.length);
     setLoading(false);
   }
 

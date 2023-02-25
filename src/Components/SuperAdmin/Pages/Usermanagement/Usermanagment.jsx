@@ -16,10 +16,13 @@ import { Usermanagementcreate } from "./Usermanagementcreate";
 import AuthUser from "../../Auth/AuthUser";
 import usePagination from "../Pagination/Pagination";
 import { PageloaderAll } from "../Page loader/Pageloader";
+import { getUsers } from "../../../../services/user";
+import { useNavigate } from "react-router-dom";
 
 export default function Usermanagment() {
   const [UserCheck, setUserCheck] = React.useState(false);
   const { http } = AuthUser();
+  const navigate = useNavigate();
   const [Userlist, setUserlist] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -28,7 +31,7 @@ export default function Usermanagment() {
   const fetchListUser = async (data) => {
     // api call
     setLoading(true);
-    let res = await http.get("/user");
+    let res = await getUsers();
 
     if (res.data.responseStatus === 200) {
       setUserlist(res.data.responseMessage);
@@ -51,9 +54,7 @@ export default function Usermanagment() {
 
   const getCompanyName = (id) => {
     const company = companylist.find((item) => item.id === Number(id));
-    console.log("company", company);
     return company ? company.name : "-";
-    // return company.name;'
   };
   // pagination
   let [page, setPage] = useState(1);
@@ -66,7 +67,9 @@ export default function Usermanagment() {
     setPage(p);
     _DATA.jump(p);
   };
-  // console.log("edit index :",editIndex);
+  const handleEdit = (id) => {
+    navigate(`/user/${id}`);
+  };
   return (
     <>
       {UserCheck || editIndex != null ? (
@@ -137,6 +140,7 @@ export default function Usermanagment() {
                                 setEditIndex={setEditIndex}
                                 index={index}
                                 setEditItem={setEditItem}
+                                handleEdit={handleEdit}
                               />
                             </TableCell>
                           </TableRow>

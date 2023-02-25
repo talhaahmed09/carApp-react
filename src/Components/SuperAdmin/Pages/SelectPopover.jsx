@@ -9,9 +9,10 @@ import { useTheme } from "@mui/material/styles";
 import delImg from "../../img/del.png";
 import { CreateBtn } from "../../Buttons";
 import AuthUser from "../Auth/AuthUser";
+import { Link } from "react-router-dom";
+import { deleteCompany } from "../../../apis/company";
 
 export default function SelectPopover(props) {
-
   const { http } = AuthUser();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -22,8 +23,7 @@ export default function SelectPopover(props) {
 
   const HandlerEdit = () => {
     props.setEditIndex(props.id);
-    props.setEditItem(props);
-  
+    props.handleEdit(props.id);
   };
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
@@ -31,12 +31,9 @@ export default function SelectPopover(props) {
   };
 
   const handleDeleteAPI = () => {
-    const formData = new FormData();
-    formData.append("_method", "DELETE");
-    http
-      .post(`/${props.apiName}/${props.id}`, formData)
+    deleteCompany(props.id)
       .then((res) => {
-props.SetState(props.state.filter((data) => data.id != props.id));
+        props.SetState(props.state.filter((data) => data.id != props.id));
         setOpenDelete(false);
       })
       .catch((err) => console.log(err.message));

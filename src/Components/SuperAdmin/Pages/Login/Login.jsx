@@ -7,43 +7,38 @@ import EmailIcon from "@mui/icons-material/Email";
 import { useNavigate, Link } from "react-router-dom";
 import AuthUser from "../../Auth/AuthUser";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
+import { post } from "../../../../http_request";
+import useAuth from "../../../../hooks/useAuth";
+import { loginUser } from "../../../../apis/auth";
+
 const Login = () => {
   const navigate = useNavigate();
-
+  const { setAuth } = useAuth();
   const { http, setToken } = AuthUser();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();
   const [msgErr, setMsg] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
-  const submitForm = () => {
+  const submitForm = async () => {
     setLoading(true);
 
     // api call
-    http
-      .post("/login", { email: email, password: password })
-      .then((res) => {
-        toast.success('login successfully')
-        setLoading(false);
-        setToken(res.data.success.token, res.data.success.user);
-        navigate(`/dashboard`);
 
-        // if (res.data.success.user.myRole[0] === "super-admin") {
-        //   navigate(`/dashboard`);
-        //   setMsg("");
-        //   console.log(res.data.success.user.myRole[0]);
-        // } else if (res.data.success.user.myRole[0] === "company-admin") {
-        //   navigate(`/company`);
-        // }
-      })
-      .catch((err) => {
-        toast.error('Invalid email or password')
-        if (err.response.status === 401) {
-          setMsg("Unauthorized");
-        setLoading(false);
-        }
-      });
+    try {
+      const res = await loginUser({ email, password });
+      toast.success("login successfully");
+      setToken(res.success.token, res.success.user);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Invalid email or password");
+      if (error.response.status === 401) {
+        setMsg("Unauthorized");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -128,7 +123,6 @@ const Login = () => {
                     Forgot Password?
                   </Link>
                 </div>
-                
 
                 <button className="login-btn" onClick={submitForm}>
                   {loading ? "Loading..." : "Login"}
@@ -144,30 +138,6 @@ const Login = () => {
                     <CircularProgress color="inherit" />
                   </Backdrop>
                 ) : null}
-                {/* <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/company`);
-                    }}
-                  >
-                    Company routes
-                  </button>
-                  <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/expert`);
-                    }}
-                  >
-                    Expert routes
-                  </button>
-                  <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/clerk`);
-                    }}
-                  >
-                    Clerk routes
-                  </button> */}
               </div>
             </div>
           </div>

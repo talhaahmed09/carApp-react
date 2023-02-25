@@ -24,7 +24,7 @@ import { CreateBtn } from "../../../Buttons";
 import { Createcompany } from "./Createcompany";
 import { Pageloader } from "../Page loader/Pageloader";
 import SelectPopover from "../SelectPopover";
-import { getAllCompanies } from "../../../../apis/company";
+import { getAllCompanies, searchCompany as search } from "../../../../apis/company";
 import { Link, useNavigate } from "react-router-dom";
 
 function TablePaginationActions(props) {
@@ -100,6 +100,16 @@ export function Company() {
     setLoading(false);
   };
 
+  const searchCompany = async (e) => {
+    e.preventDefault();
+    const query = new FormData(e.target).get("query")
+    setLoading(true);
+    let { objData } = await search(query);
+    setCompanylist(objData.data);
+    setCount(objData.data.length);
+    setLoading(false);
+  }
+
   // pagination
   let [controller, setController] = useState({
     page: 0,
@@ -137,25 +147,26 @@ export function Company() {
         <div className="flex justify-between">
           <h1 className="text-base text-bold mb-0 ml-5">List of Company</h1>
           <div className="mr-5 flex justify-between gap-2">
-            <form>
+            <form onSubmit={searchCompany}>
               <TextField
                 id="search-bar"
                 className="text"
                 onInput={(e) => {
                   console.log(e.target.value);
                 }}
-                name="s"
+                name="query"
                 label="Search"
                 variant="outlined"
                 placeholder="Search..."
                 size="small"
-                endAdornment={
-                  <InputAdornment>
+                InputProps={{
+                endAdornment:
+                  (<InputAdornment>
                     <IconButton type="submit" aria-label="search">
                       <Search style={{ fill: "blue" }} />
                     </IconButton>
-                  </InputAdornment>
-                }
+                  </InputAdornment>)
+                }}
               />
             </form>
             <CreateBtn

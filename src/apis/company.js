@@ -19,3 +19,7 @@ export const deleteCompany = (id) => {
 export const updateCompany = (id, body) => {
   return post(`company/${id}`, body);
 };
+
+export const searchCompany = (query) => {
+  return get(`company/search?query=${query}`);
+}

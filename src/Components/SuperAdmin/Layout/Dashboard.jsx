@@ -33,7 +33,6 @@ const drawerWidth = 250;
 
 function Dashbaord(props) {
   const { getToken, token, logout, user } = AuthUser();
-
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElModal, setAnchorElModal] = React.useState(null);

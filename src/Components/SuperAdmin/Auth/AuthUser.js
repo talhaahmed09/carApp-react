@@ -34,7 +34,9 @@ export default function AuthUser() {
   return {
     setToken: saveToken,
     getToken,
-    http: httpService,
+    token: getToken(),
+    user: getUser(),
+    httpService,
     logout,
   };
 }

@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { deleteCompany } from "../../../apis/company";
 
 export default function SelectPopover(props) {
-
   const { http } = AuthUser();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -24,8 +23,7 @@ export default function SelectPopover(props) {
 
   const HandlerEdit = () => {
     props.setEditIndex(props.id);
-    props.setEditItem(props);
-  
+    props.handleEdit(props.id);
   };
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
@@ -75,11 +73,8 @@ export default function SelectPopover(props) {
           <Button
             onClick={HandlerEdit}
             style={{ width: "100%", color: "black" }}
-
           >
-            <Link to={`/company/edit/${props.id}`}>
             Edit
-            </Link>
           </Button>
           <Button
             style={{ width: "100%", color: "black" }}

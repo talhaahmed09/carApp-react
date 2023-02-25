@@ -138,30 +138,6 @@ const Login = () => {
                     <CircularProgress color="inherit" />
                   </Backdrop>
                 ) : null}
-                {/* <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/company`);
-                    }}
-                  >
-                    Company routes
-                  </button>
-                  <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/expert`);
-                    }}
-                  >
-                    Expert routes
-                  </button>
-                  <button
-                    className="m-3"
-                    onClick={() => {
-                        navigate(`/dashboard/clerk`);
-                    }}
-                  >
-                    Clerk routes
-                  </button> */}
               </div>
             </div>
           </div>

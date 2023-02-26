@@ -26,7 +26,7 @@ import { Country, City } from "country-state-city";
 import { FixedSizeList } from "react-window";
 import Virtualize from "./LargeDropDown";
 import { useParams, useNavigate } from "react-router";
-import { getUserDetails, updateUser } from "../../../../apis/user";
+import { createUser, getUserDetails, updateUser } from "../../../../apis/user";
 import { getAllCompanies } from "../../../../apis/company";
 import { intersection, isEmpty } from "lodash";
 
@@ -220,11 +220,9 @@ export const Usermanagementcreate = (props) => {
       console.log(values);
       return console.log("Hello dumb mf");
     }
-    console.log(values, touched);
     // console.log("companyid", companyid);
     // const formData = new FormData();
-    http
-      .post(`/user`, values)
+    createUser(values)
       .then((res) => {
         toast.success("create succesfully");
         setusermanagementCheck(!usermanagementCheck);

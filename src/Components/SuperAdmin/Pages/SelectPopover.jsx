@@ -33,7 +33,7 @@ export default function SelectPopover(props) {
   const handleDeleteAPI = () => {
     deleteCompany(props.id)
       .then((res) => {
-        props.SetState(props.state.filter((data) => data.id != props.id));
+        props.refresh();
         setOpenDelete(false);
       })
       .catch((err) => console.log(err.message));

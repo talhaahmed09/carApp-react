@@ -217,8 +217,7 @@ export function Company() {
                           <SelectPopover
                             {...data}
                             apiName="company"
-                            SetState={setCompanylist}
-                            state={companylist}
+                            refresh={fetchListCompany}
                             setEditIndex={setEditIndex}
                             index={index}
                             setEditItem={setEditItem}

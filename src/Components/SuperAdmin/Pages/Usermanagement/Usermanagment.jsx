@@ -16,10 +16,11 @@ import { Usermanagementcreate } from "./Usermanagementcreate";
 import AuthUser from "../../Auth/AuthUser";
 import usePagination from "../Pagination/Pagination";
 import { PageloaderAll } from "../Page loader/Pageloader";
-import { getAllUsers } from "../../../../apis/user";
+import { getAllUsers, searchUser as search } from "../../../../apis/user";
 import { useNavigate } from "react-router-dom";
 import TablePaginationActions from "../../shared/TablePaginationAction";
 import { getAllCompanies } from "../../../../apis/company";
+import SearchInput from "../../shared/SearchInput";
 
 export default function Usermanagment() {
   const { http } = AuthUser();
@@ -71,6 +72,16 @@ export default function Usermanagment() {
     return company ? company.name : "-";
   };
 
+  const searchUser = async (e) => {
+    e.preventDefault();
+    const query = new FormData(e.target).get("query")
+    setLoading(true);
+    let { objData } = await search(query);
+    setUserList(objData);
+    setCount(objData.length);
+    setLoading(false);
+  }
+
   const handleEdit = (id) => {
     navigate(`/users/edit/${id}`);
   };
@@ -97,7 +108,8 @@ export default function Usermanagment() {
           <h1 className="text-base text-bold mb-0 ml-5">
             List Of Experts And Clerks
           </h1>
-          <div className="mr-5">
+          <div className="mr-5 flex justify-between gap-2">
+            <SearchInput onSearch={searchUser} />
             <CreateBtn
               name="Create "
               icon={<AddIcon />}

@@ -20,3 +20,7 @@ export const createUser = (values) => {
 export const updateUser = (id, body) => {
   return post(`user/${id}`, body);
 };
+
+export const searchUser = (query) => {
+  return get(`user/search?q=${query}`);
+}

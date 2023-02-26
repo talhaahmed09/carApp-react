@@ -1,4 +1,10 @@
-import { InputLabel, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
+import {
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  TextField,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { Company } from "./Company";
@@ -22,7 +28,7 @@ const getCities = (countryName) => {
   const country = countriesObj.find((item) => {
     return item.name === countryName;
   });
-  const code = country !== undefined ? country.isoCode : "DE"
+  const code = country !== undefined ? country.isoCode : "DE";
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -52,19 +58,21 @@ const formValidationSchema = Yup.object().shape({
 
 export const Createcompany = (props) => {
   const { id } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const countriesArr = countriesObj.map((country) => {
     return { label: country.name, value: country.name };
   });
 
-  const [company, setCompany] = useState([])
+  const [company, setCompany] = useState([]);
 
   const getCompanyDetails = async () => {
-    const { objData: {content} } = await getCompanyDetail(id)
+    const {
+      objData: { content },
+    } = await getCompanyDetail(id);
     setValues({
       name: content.name,
       director: content.director,
-      person:content.person,
+      person: content.person,
       register: content.register,
       tax_number: content.tax_number,
       email: content.email,
@@ -76,16 +84,14 @@ export const Createcompany = (props) => {
       city: content.zipCity,
       street_no: content.streetNo,
     });
-    setCompany(content)
-  }
+    setCompany(content);
+  };
 
- 
   useEffect(() => {
-    if(props.edit){
-      getCompanyDetails()
+    if (props.edit) {
+      getCompanyDetails();
     }
     if (typeof content !== "undefined") {
-    
     } else {
       console.log("My prop is not present");
     }
@@ -124,7 +130,7 @@ export const Createcompany = (props) => {
   });
 
   const cities = useMemo(() => {
-    const cities = getCities(values.country)
+    const cities = getCities(values.country);
     values.city = cities[0] ? cities[0].value : "";
     return cities;
   }, [values.country]);
@@ -139,11 +145,10 @@ export const Createcompany = (props) => {
     if (!isValid) {
       // toast.error(errors)
     }
- const res =  await  createCompany(values)
- if(res) {
-  navigate('/companyList')
- }
-     
+    const res = await createCompany(values);
+    if (res) {
+      navigate("/companyList");
+    }
   };
   const handleCancel = () => {
     setCompanyCheck(!companyCheck);
@@ -175,10 +180,8 @@ export const Createcompany = (props) => {
               onClick={() => setCompanyCheck(!companyCheck)}
               className="backButton"
             />
-            {company? (
-              <h1 className="text-base text-bold mb-0 ml-5">
-                {company.name}
-              </h1>
+            {company ? (
+              <h1 className="text-base text-bold mb-0 ml-5">{company.name}</h1>
             ) : (
               <h1 className="text-base text-bold mb-0 ml-5">Create Company</h1>
             )}
@@ -187,11 +190,7 @@ export const Createcompany = (props) => {
           <hr />
 
           <div className="company">
-            { company ? (
-              <p>Edit Company</p>
-            ) : (
-              <p>Create Company</p>
-            )}
+            {company ? <p>Edit Company</p> : <p>Create Company</p>}
           </div>
 
           <div className="generl">
@@ -426,9 +425,15 @@ export const Createcompany = (props) => {
           <div className="row mt-5">
             <div className="col-lg-6">
               <div className="country">
-                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country *</p>
-                <FormControl fullWidth required error={Boolean(touched.country && errors.country)}>
-                <InputLabel id="country-label">Country</InputLabel>
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Country *
+                </p>
+                <FormControl
+                  fullWidth
+                  required
+                  error={Boolean(touched.country && errors.country)}
+                >
+                  <InputLabel id="country-label">Country</InputLabel>
                   <Select
                     id="country"
                     name="country"
@@ -441,7 +446,7 @@ export const Createcompany = (props) => {
                     error={Boolean(touched.country && errors.country)}
                     helperText={touched.country && errors.country}
                     required
-                    >
+                  >
                     {countriesArr?.length &&
                       countriesArr.map(({ label, value }) => (
                         <MenuItem key={value} value={value}>
@@ -449,37 +454,40 @@ export const Createcompany = (props) => {
                         </MenuItem>
                       ))}
                   </Select>
-                  </FormControl>
+                </FormControl>
               </div>
             </div>
 
             <div className="col-lg-6">
               <div className="ZIP / City">
                 <p style={{ fontWeight: "bold", fontSize: "12px" }}>City *</p>
-                <FormControl fullWidth required error={Boolean(touched.city && errors.city)}>
-                <InputLabel id="city-label">City</InputLabel>
+                <FormControl
+                  fullWidth
+                  required
+                  error={Boolean(touched.city && errors.city)}
+                >
+                  <InputLabel id="city-label">City</InputLabel>
                   <Select
-                     id="zipCity"
-                     name="zipCity"
-                     labelId="zipCity"
-                     value={values.city}
-                     onChange={(e) => {
-                       setFieldValue("city", e.target.value);
-                     }}
-                     label="City"
-                     required
-                     input={<OutlinedInput label="Name" />}
-                     error={Boolean(touched.city && errors.city)}
-                     helperText={touched.city && errors.city}
-                    >
-                      {cities.map(({ label, value }, id) => (
-                        <MenuItem key={id} value={value}>
-                          {label}
-                        </MenuItem>
-                  ))}
-                    
+                    id="zipCity"
+                    name="zipCity"
+                    labelId="zipCity"
+                    value={values.city}
+                    onChange={(e) => {
+                      setFieldValue("city", e.target.value);
+                    }}
+                    label="City"
+                    required
+                    input={<OutlinedInput label="Name" />}
+                    error={Boolean(touched.city && errors.city)}
+                    helperText={touched.city && errors.city}
+                  >
+                    {cities.map(({ label, value }, id) => (
+                      <MenuItem key={id} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
                   </Select>
-                  </FormControl>
+                </FormControl>
               </div>
             </div>
           </div>
@@ -547,4 +555,4 @@ export const Createcompany = (props) => {
       )}
     </>
   );
-}
+};

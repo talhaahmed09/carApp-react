@@ -2,10 +2,16 @@ import * as React from "react";
 import { useState } from "react";
 import { InputAdornment, TablePagination, Toolbar } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
-import ToolTip from "@mui/material/Tooltip"
+import ToolTip from "@mui/material/Tooltip";
 import TextField from "@mui/material/TextField";
-import { LastPage, FirstPage, KeyboardArrowLeft, KeyboardArrowRight, Search } from "@mui/icons-material";
-import {Box, IconButton} from "@mui/material";
+import {
+  LastPage,
+  FirstPage,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  Search,
+} from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,8 +24,8 @@ import { CreateBtn } from "../../../Buttons";
 import { Createcompany } from "./Createcompany";
 import { Pageloader } from "../Page loader/Pageloader";
 import SelectPopover from "../SelectPopover";
-import { getAllCompanies } from "../../../../apis/company";
-import { Link } from "react-router-dom";
+import { getAllCompanies, searchCompany as search } from "../../../../apis/company";
+import { Link, useNavigate } from "react-router-dom";
 
 function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -41,7 +47,7 @@ function TablePaginationActions(props) {
   };
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5, mb: "1rem" }} >
+    <Box sx={{ flexShrink: 0, ml: 2.5, mb: "1rem" }}>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -68,7 +74,7 @@ function TablePaginationActions(props) {
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
       >
-         <LastPage />
+        <LastPage />
       </IconButton>
     </Box>
   );
@@ -79,21 +85,30 @@ export function Company() {
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
-  const [count , setCount] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
   const fetchListCompany = async () => {
     // api call
     const params = {
-      
-      page: controller.page,
+      page: controller.page + 1,
       size: controller.per_page,
-    }
+    };
     setLoading(true);
-    let {objData} = await getAllCompanies(params);
+    let { objData } = await getAllCompanies(params);
     setCompanylist(objData.data);
     setCount(objData.total);
     setLoading(false);
   };
+
+  const searchCompany = async (e) => {
+    e.preventDefault();
+    const query = new FormData(e.target).get("query")
+    setLoading(true);
+    let { objData } = await search(query);
+    setCompanylist(objData);
+    setCount(objData.length);
+    setLoading(false);
+  }
 
   // pagination
   let [controller, setController] = useState({
@@ -101,133 +116,138 @@ export function Company() {
     per_page: 5,
   });
 
+  const navigate = useNavigate();
+  const handleEdit = (id) => {
+    navigate(`/company/edit/${id}`);
+  };
 
-  
   React.useEffect(() => {
-    fetchListCompany()
+    fetchListCompany();
   }, [controller]);
   // const _DATA = usePagination(companylist, rowsPerPage);
 
-  const paginationHandler = (e,p) => {
-    setController(prev => ({
+  const paginationHandler = (e, p) => {
+    setController((prev) => ({
       ...prev,
-      page: p
+      page: p,
     }));
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setController( prev => ({
+    setController((prev) => ({
       ...prev,
-      per_page: parseInt(event.target.value, 10)
+      per_page: parseInt(event.target.value, 10),
     }));
   };
 
   return (
-  
-        <>
-          <div style={{ height: 400, width: "100%" }}>
-          <Toolbar />
-            <div className="flex justify-between">
-              <h1 className="text-base text-bold mb-0 ml-5">List of Company</h1>
-              <div className="mr-5 flex justify-between gap-2">
-                  <form>
-                    <TextField
-                      id="search-bar"
-                      className="text"
-                      onInput={(e) => {
-                        console.log(e.target.value);
-                      }}
-                      name="s"
-                      label="Search"
-                      variant="outlined"
-                      placeholder="Search..."
-                      size="small"
-                      endAdornment={
-                        <InputAdornment>
-                          <IconButton type="submit" aria-label="search">
-                            <Search style={{ fill: "blue" }} />
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  </form>
-                <CreateBtn
-                  name="Create"
-                  icon={<AddIcon />}
-                  btnProps={{component: Link, to: "../company/create", replace: true}}
-                />
-              </div>
-            </div>
-
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Title</TableCell>
-                    <TableCell align="center">Contact</TableCell>
-                    <TableCell align="center">Address</TableCell>
-                    <TableCell align="center">Action</TableCell>
-                  </TableRow>
-                </TableHead>
-
-                {loading ? (
-                  <Pageloader />
-                ) : (
-                  <TableBody>
-                    {companylist &&
-                      companylist.map((data, index) => {
-                        return (
-                          <TableRow
-                            key={data.id}
-                            sx={{
-                              "&:last-child td, &:last-child th": {
-                                border: 0,
-                              },
-                            }}
-                          >
-                            <TableCell component="th" scope="row">
-                              <p className="mb-0">{data.name}</p>
-                              <p className="mb-0 text-slate-400">
-                                {data.email}
-                              </p>
-                            </TableCell>
-                            <TableCell align="center">{data.mobile}</TableCell>
-                            <TableCell align="center">{data.city}</TableCell>
-                            <TableCell align="center">
-                              <SelectPopover
-                                {...data}
-                                apiName="company"
-                                SetState={setCompanylist}
-                                state={companylist}
-                                setEditIndex={setEditIndex}
-                                index={index}
-                                setEditItem={setEditItem}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-            {editIndex != null ? null : !loading ? (
-              <div className="mt-3 flex justify-end">
-                <TablePagination
-                  count={count}
-                  variant="outlined"
-                  shape="rounded"
-                  onPageChange={paginationHandler}
-                  rowsPerPage={controller.per_page}
-                  SelectProps={{sx: {mb: '1rem'}}}
-                  page={controller.page}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  rowsPerPageOptions={[5, 10, 15, 20]}
-                  ActionsComponent={TablePaginationActions}
-                />
-              </div>
-            ) : null}
+    <>
+      <div style={{ height: 400, width: "100%" }}>
+        <Toolbar />
+        <div className="flex justify-between">
+          <h1 className="text-base text-bold mb-0 ml-5">List of Company</h1>
+          <div className="mr-5 flex justify-between gap-2">
+            <form onSubmit={searchCompany}>
+              <TextField
+                id="search-bar"
+                className="text"
+                onInput={(e) => {
+                  console.log(e.target.value);
+                }}
+                name="query"
+                label="Search"
+                variant="outlined"
+                placeholder="Search..."
+                size="small"
+                InputProps={{
+                endAdornment:
+                  (<InputAdornment>
+                    <IconButton type="submit" aria-label="search">
+                      <Search style={{ fill: "blue" }} />
+                    </IconButton>
+                  </InputAdornment>)
+                }}
+              />
+            </form>
+            <CreateBtn
+              name="Create"
+              icon={<AddIcon />}
+              btnProps={{
+                component: Link,
+                to: "../company/create",
+                replace: true,
+              }}
+            />
           </div>
-        </>
+        </div>
+
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell align="center">Contact</TableCell>
+                <TableCell align="center">Address</TableCell>
+                <TableCell align="center">Action</TableCell>
+              </TableRow>
+            </TableHead>
+
+            {loading ? (
+              <Pageloader />
+            ) : (
+              <TableBody>
+                {companylist &&
+                  companylist.map((data, index) => {
+                    return (
+                      <TableRow
+                        key={data.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            border: 0,
+                          },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          <p className="mb-0">{data.name}</p>
+                          <p className="mb-0 text-slate-400">{data.email}</p>
+                        </TableCell>
+                        <TableCell align="center">{data.mobile}</TableCell>
+                        <TableCell align="center">{data.city}</TableCell>
+                        <TableCell align="center">
+                          <SelectPopover
+                            {...data}
+                            apiName="company"
+                            refresh={fetchListCompany}
+                            setEditIndex={setEditIndex}
+                            index={index}
+                            setEditItem={setEditItem}
+                            handleEdit={handleEdit}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
+        {editIndex != null ? null : !loading ? (
+          <div className="mt-3 flex justify-end">
+            <TablePagination
+              count={count}
+              variant="outlined"
+              shape="rounded"
+              onPageChange={paginationHandler}
+              rowsPerPage={controller.per_page}
+              SelectProps={{ sx: { mb: "1rem" } }}
+              page={controller.page}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10, 15, 20]}
+              ActionsComponent={TablePaginationActions}
+            />
+          </div>
+        ) : null}
+      </div>
+    </>
   );
 }

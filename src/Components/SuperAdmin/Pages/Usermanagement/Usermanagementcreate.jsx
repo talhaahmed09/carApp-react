@@ -23,8 +23,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FormLabel } from "react-bootstrap";
 import { Country, City } from "country-state-city";
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList } from "react-window";
 import Virtualize from "./LargeDropDown";
+import { useParams, useNavigate } from "react-router";
+import { createUser, getUserDetails, updateUser } from "../../../../apis/user";
+import { getAllCompanies } from "../../../../apis/company";
+import { intersection, isEmpty } from "lodash";
 
 const ITEM_SIZE = 36;
 const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
@@ -39,17 +43,23 @@ const VirtualizedList = React.forwardRef(({ children, ...rest }, ref) => {
       itemSize={ITEM_SIZE}
       itemCount={itemCount}
     >
-      {({ index, style }) => <div style={style} key={index}>{children[index]}</div>}
+      {({ index, style }) => (
+        <div style={style} key={index}>
+          {children[index]}
+        </div>
+      )}
     </FixedSizeList>
   );
 });
 
 const countriesObj = Country.getAllCountries();
+let isNewUser = true;
 
 const getCities = (countryName) => {
-  const code = countriesObj.find((item) => {
+  const country = countriesObj.find((item) => {
     return item.name === countryName;
-  }).isoCode;
+  });
+  const code = country ? country.isoCode : "DE";
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -65,21 +75,22 @@ const isValidUrl = (value) => {
   }
 };
 
-
 const validationSchema = Yup.object().shape({
-  salutation: Yup.string().required("Salutation is required"),
+  salution: Yup.string().required("Salutation is required"),
   title: Yup.string().required("Title is required"),
   first_name: Yup.string().required("First name is required"),
   last_name: Yup.string().required("Last name is required"),
-  password: Yup.string()
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-      "Password must contain at least 1 uppercase, 1 number, and 1 special character"
-    )
-    .required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Confirm Password is required"),
+  ...(isNewUser && {
+    password: Yup.string()
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        "Password must contain at least 1 uppercase, 1 number, and 1 special character"
+      )
+      .required("Password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
+  }),
   country: Yup.string().required("Country is required"),
   city: Yup.string().required("City is required"),
   street_no: Yup.string().required("Street address is required"),
@@ -93,17 +104,16 @@ const validationSchema = Yup.object().shape({
 });
 
 export const Usermanagementcreate = (props) => {
+  const { id } = useParams();
   const { http } = AuthUser();
-  const getToken = AuthUser();
-
-  const listboxRef = React.useRef(null);
+  const navigate = useNavigate();
 
   const countriesArr = countriesObj.map((country) => {
     return { label: country.name, value: country.name };
   });
 
   const initialValues = {
-    salutation: "",
+    salution: "",
     title: "",
     first_name: "",
     last_name: "",
@@ -153,16 +163,43 @@ export const Usermanagementcreate = (props) => {
     setusermanagementCheck(true);
   };
 
+  const getUser = async () => {
+    const {
+      objData: { content },
+    } = await getUserDetails(id);
+    const role = intersection(content.myRole, ["expert", "clerk", "company-admin"]);
+    setValues({
+      salution: content.salution ? content.salution : "",
+      title: content.title ? content.title : "",
+      first_name: content.first_name ? content.first_name : "",
+      last_name: content.last_name ? content.last_name : "",
+      birthday: content.birthday ? content.birthday : "",
+      password: content.password ? content.password : "",
+      active: content.active ? content.active : false,
+      email: content.email ? content.email : "",
+      role: !isEmpty(role) ? role.pop() : "",
+      homepage: content.homepage ? content.homepage : "",
+      company_id: content.company_id ? content.company_id : "",
+      telephone: content.telephone ? content.telephone : "",
+      mobile: content.mobile ? content.mobile : "",
+      fax: content.fax ? content.fax : "",
+      country: content.country ? content.country : "Germany",
+      mailbox: content.mailbox ? content.mailbox : "",
+      city: content.city ? content.city : "",
+      street_no: content.street_no ? content.street_no : "",
+    });
+    console.log(isNewUser);
+    isNewUser = false;
+  };
+
   // Handle Save
   const handleSave = (data) => {
-    const formData = new FormData();
     // console.log("companyid", companyid);
     // console.log("props", props.id);
 
     // If state is not empty then append state into formData otherwise append the props.editItem into formDate
 
-    http
-      .post(`/user/${props.editItem.id}`, formData)
+    updateUser(id, values)
       .then((res) => {
         console.log(res);
         toast.success("update succesfully");
@@ -183,11 +220,9 @@ export const Usermanagementcreate = (props) => {
       console.log(values);
       return console.log("Hello dumb mf");
     }
-    console.log(values, touched);
     // console.log("companyid", companyid);
     // const formData = new FormData();
-    http
-      .post(`/user`, values)
+    createUser(values)
       .then((res) => {
         toast.success("create succesfully");
         setusermanagementCheck(!usermanagementCheck);
@@ -198,103 +233,101 @@ export const Usermanagementcreate = (props) => {
   const fetchListCompany = async () => {
     // api call
 
-    let res = await http.get("/company");
-    setCompanylist(res.data.responseMessage);
+    let res = await getAllCompanies({ size: 5, page: 1 });
+    setCompanylist(res.objData.data);
   };
   React.useEffect(() => {
     fetchListCompany();
   }, []);
 
-  const handleCityChange = e => {
-    console.log(e)
-      setFieldValue("city", e.target.textContent);
-  }
+  React.useEffect(() => {
+    getUser();
+  }, [id]);
+
+  const handleCityChange = (e) => {
+    console.log(e);
+    setFieldValue("city", e.target.textContent);
+  };
 
   return (
+    <div>
+      <Toolbar />
 
-        <div>
-          <Toolbar />
+      <div className="flex justify-between items-center border-slate-400 ">
+        <div className="flex items-center justify-center">
+          <WestIcon onClick={() => navigate(-1)} className="backButton" />
+          {props && props.editItem ? (
+            <h1 className="text-base text-bold mb-0 ml-5">
+              {props.editItem.first_name} {props.editItem.last_name}
+            </h1>
+          ) : (
+            <h1 className="text-base text-bold mb-0 ml-5">Create User</h1>
+          )}
+        </div>
 
-          <div className="flex justify-between items-center border-slate-400 ">
-            <div className="flex items-center justify-center">
-              <WestIcon
-                onClick={() => setusermanagementCheck(!usermanagementCheck)}
-                className="backButton"
-              />
-              {props && props.editItem ? (
-                <h1 className="text-base text-bold mb-0 ml-5">
-                  {props.editItem.first_name} {props.editItem.last_name}
-                </h1>
-              ) : (
-                <h1 className="text-base text-bold mb-0 ml-5">Create User</h1>
-              )}
-            </div>
+        <div className="w-[200px]">
+          <FormControl fullWidth error={touched.role && errors.role}>
+            <InputLabel id="demo-simple-select-label">Role</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Role"
+              value={values.role}
+              onChange={(e) => setFieldValue("role", e.target.value)}
+              onBlur={handleBlur}
+            >
+              <MenuItem value="expert">Experts</MenuItem>
+              <MenuItem value="clerk">Clerks</MenuItem>
+              <MenuItem value="company-admin">Company admin</MenuItem>
+            </Select>
+            <FormHelperText>{touched.role && errors.role}</FormHelperText>
+          </FormControl>
+        </div>
+      </div>
 
-            <div className="w-[200px]">
-              <FormControl fullWidth error={touched.role && errors.role}>
-                <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Role"
-                  value={values.role}
-                  onChange={(e) => setFieldValue("role", e.target.value)}
-                  onBlur={handleBlur}
+      <hr />
+
+      {/* General */}
+
+      <section>
+        <div className="generl">
+          <p>General</p>
+        </div>
+        <div className="row mt-5">
+          <div className="col-lg-12">
+            <div className="Street Number">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Company</p>
+              <div className="w-[200px]">
+                <FormControl
+                  fullWidth
+                  error={touched.company_id && errors.company_id}
+                  helperText={touched.company_id && errors.company_id}
                 >
-                  <MenuItem value="expert">Experts</MenuItem>
-                  <MenuItem value="clerk">Clerks</MenuItem>
-                  <MenuItem value="company-admin">Company admin</MenuItem>
-                </Select>
-                <FormHelperText>{touched.role && errors.role}</FormHelperText>
-              </FormControl>
-            </div>
-          </div>
-
-          <hr />
-
-          {/* General */}
-
-          <section>
-            <div className="generl">
-              <p>General</p>
-            </div>
-            <div className="row mt-5">
-              <div className="col-lg-12">
-                <div className="Street Number">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Company
-                  </p>
-                  <div className="w-[200px]">
-                    <FormControl
-                      fullWidth
-                      error={touched.company_id && errors.company_id}
-                      helperText={touched.company_id && errors.company_id}
-                    >
-                      <InputLabel id="demo-simple-select-label">
-                        Select Company
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Select Company"
-                        value={values.company_id}
-                        onChange={(e) =>
-                          setFieldValue("company_id", e.target.value)
-                        }
-                        onBlur={handleBlur}
-                      >
-                        {companylist.map(({ id, name }, index) => (
-                          <MenuItem key={index} value={id} name={name}>
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        {touched.company_id && errors.company_id}
-                      </FormHelperText>
-                    </FormControl>
-                  </div>
-                  {/* <TextField
+                  <InputLabel id="demo-simple-select-label">
+                    Select Company
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Select Company"
+                    value={values.company_id}
+                    onChange={(e) =>
+                      setFieldValue("company_id", e.target.value)
+                    }
+                    onBlur={handleBlur}
+                  >
+                    {companylist.map(({ id, name }, index) => (
+                      <MenuItem key={index} value={id} name={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>
+                    {touched.company_id && errors.company_id}
+                  </FormHelperText>
+                </FormControl>
+              </div>
+              {/* <TextField
                     fullWidth
                     label="company id"
                     id="Street No*"
@@ -305,157 +338,154 @@ export const Usermanagementcreate = (props) => {
                     }
                     onChange={(e) => setCompanyid(e.target.value)}
                   /> */}
-                </div>
-              </div>
             </div>
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="managing">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Salution *
-                  </p>
-                  <FormControl
-                    fullWidth
-                    error={touched.salutation && errors.salutation}
-                    helperText={touched.salutation && errors.salutation}
-                  >
-                    <InputLabel id="demo-simple-salutation-select-label">
-                      Salutation *
-                    </InputLabel>
-                    <Select
-                      required
-                      labelId="demo-simple-salutation-select-label"
-                      label="Salutation *"
-                      id="demo-simple-salutation--select"
-                      value={values.salutation}
-                      onChange={(e) =>
-                        setFieldValue("salutation", e.target.value)
-                      }
-                      onBlur={handleBlur}
-                      error={touched.salutation && errors.salutation}
-                      helperText={touched.salutation && errors.salutation}
-                    >
-                      <MenuItem value="MR">MR</MenuItem>
-                      <MenuItem value="MRS">MR's</MenuItem>
-                      <MenuItem value="MS">MS</MenuItem>
-                    </Select>
-                    <FormHelperText>
-                      {touched.salutation && errors.salutation}
-                    </FormHelperText>
-                  </FormControl>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="company">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>Title</p>
-
-                  <TextField
-                    fullWidth
-                    required
-                    label="Enter Title"
-                    id="title"
-                    name="title"
-                    value={values.title}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.title && errors.title}
-                    helperText={touched.title && errors.title}
-                  />
-                </div>
-              </div>
+          </div>
+        </div>
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="managing">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Salution *</p>
+              <FormControl
+                fullWidth
+                error={touched.salutation && errors.salutation}
+                helperText={touched.salutation && errors.salutation}
+              >
+                <InputLabel id="demo-simple-salutation-select-label">
+                  Salutation *
+                </InputLabel>
+                <Select
+                  required
+                  labelId="demo-simple-salutation-select-label"
+                  label="Salutation *"
+                  id="demo-simple-salutation--select"
+                  value={values.salutation}
+                  onChange={(e) => setFieldValue("salutation", e.target.value)}
+                  onBlur={handleBlur}
+                  error={touched.salutation && errors.salutation}
+                  helperText={touched.salutation && errors.salutation}
+                >
+                  <MenuItem value="MR">MR</MenuItem>
+                  <MenuItem value="MRS">MR's</MenuItem>
+                  <MenuItem value="MS">MS</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {touched.salutation && errors.salutation}
+                </FormHelperText>
+              </FormControl>
             </div>
+          </div>
+          <div className="col-lg-6">
+            <div className="company">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Title</p>
 
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="managing">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    First Name{" "}
-                  </p>
-
-                  <TextField
-                    fullWidth
-                    label="First Name"
-                    id="first_name"
-                    name="first_name"
-                    value={values.first_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.first_name && errors.first_name}
-                    helperText={touched.first_name && errors.first_name}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="company">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Last Name
-                  </p>
-
-                  <TextField
-                    fullWidth
-                    label="Last Name"
-                    id="last_name"
-                    name="last_name"
-                    values={values.last_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.last_name && errors.last_name}
-                    helperText={touched.last_name && errors.last_name}
-                  />
-                </div>
-              </div>
+              <TextField
+                fullWidth
+                required
+                label="Enter Title"
+                id="title"
+                name="title"
+                value={values.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.title && errors.title}
+                helperText={touched.title && errors.title}
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="contact">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Birthday
-                  </p>
-                  <TextField
-                    type="date"
-                    fullWidth
-                    id="birthday"
-                    name="birthday"
-                    value={values.birthday}
-                    onChange={handleChange}
-                    label="Birthday"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </div>
-              </div>
-              <div className=" col-lg-6 ">
-                <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label">
-                    Status *
-                  </FormLabel>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    name="row-radio-buttons-group"
-                    value={values.active}
-                    onChange={(e) => {
-                      setFieldValue("active", e.target.value);
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.active && errors.active}
-                    helperText={touched.active && errors.active}
-                  >
-                    <FormControlLabel
-                      value="option1"
-                      control={<Radio />}
-                      label="Active"
-                    />
-                    <FormControlLabel
-                      value="option2"
-                      control={<Radio />}
-                      label="Not Active"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </div>
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="managing">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                First Name{" "}
+              </p>
+
+              <TextField
+                fullWidth
+                label="First Name"
+                id="first_name"
+                name="first_name"
+                value={values.first_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.first_name && errors.first_name}
+                helperText={touched.first_name && errors.first_name}
+              />
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className="company">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Last Name</p>
+
+              <TextField
+                fullWidth
+                label="Last Name"
+                id="last_name"
+                name="last_name"
+                value={values.last_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.last_name && errors.last_name}
+                helperText={touched.last_name && errors.last_name}
+                InputLabelProps={{
+                  shrink: values.last_name && values.last_name.length !== 0,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="contact">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Birthday</p>
+              <TextField
+                type="date"
+                fullWidth
+                id="birthday"
+                name="birthday"
+                value={values.birthday}
+                onChange={handleChange}
+                label="Birthday"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </div>
+          </div>
+          <div className=" col-lg-6 ">
+            <FormControl>
+              <FormLabel id="demo-row-radio-buttons-group-label">
+                Status *
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+                value={values.active}
+                onChange={(e) => {
+                  setFieldValue("active", e.target.value);
+                }}
+                onBlur={handleBlur}
+                error={touched.active && errors.active}
+                helperText={touched.active && errors.active}
+              >
+                <FormControlLabel
+                  value="option1"
+                  control={<Radio />}
+                  label="Active"
+                />
+                <FormControlLabel
+                  value="option2"
+                  control={<Radio />}
+                  label="Not Active"
+                />
+              </RadioGroup>
+            </FormControl>
+          </div>
+          {isNewUser && (
+            <>
               <div className="col-lg-6 mt-5">
                 <div className="Commerical">
                   <p style={{ fontWeight: "bold", fontSize: "12px" }}>
@@ -497,165 +527,161 @@ export const Usermanagementcreate = (props) => {
                     fullWidth
                   />
                 </div>
-              </div>
+              </div>{" "}
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Contact */}
+
+      <section>
+        <div className="Contactcent mt-5">
+          <p>Contact</p>
+        </div>
+
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="E-mail">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>E-mail</p>
+
+              <TextField
+                fullWidth
+                type="email"
+                label="Email"
+                id="email"
+                name="email"
+                required
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.email && errors.email}
+                helperText={touched.email && errors.email}
+              />
             </div>
-          </section>
+          </div>
 
-          {/* Contact */}
+          <div className="col-lg-6">
+            <div className="Mail">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Homepage</p>
 
-          <section>
-            <div className="Contactcent mt-5">
-              <p>Contact</p>
+              <TextField
+                fullWidth
+                label="http//"
+                id="homepage"
+                name="homepage"
+                value={values.homepage}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.homepage && errors.homepage}
+                helperText={touched.homepage && errors.homepage}
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="E-mail">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>E-mail</p>
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="Telephone">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Telephone</p>
 
-                  <TextField
-                    fullWidth
-                    type="email"
-                    label="Email"
-                    id="email"
-                    name="email"
-                    required
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.email && errors.email}
-                    helperText={touched.email && errors.email}
-                  />
-                </div>
-              </div>
-
-              <div className="col-lg-6">
-                <div className="Mail">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Homepage
-                  </p>
-
-                  <TextField
-                    fullWidth
-                    label="http//"
-                    id="homepage"
-                    name="homepage"
-                    value={values.homepage}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.homepage && errors.homepage}
-                    helperText={touched.homepage && errors.homepage}
-                  />
-                </div>
-              </div>
+              <MuiTelInput
+                defaultCountry="DE"
+                forceCallingCode
+                id="telephone"
+                name="telephone"
+                label="Telephone"
+                value={values.telephone}
+                onChange={(e) => setFieldValue("telephone", e)}
+                fullWidth
+                required
+                onBlur={handleBlur}
+                error={touched.telephone && errors.telephone}
+                helperText={touched.telephone && errors.telephone}
+              />
             </div>
+          </div>
 
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="Telephone">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Telephone
-                  </p>
-
-                  <MuiTelInput
-                    defaultCountry="DE"
-                    forceCallingCode
-                    id="telephone"
-                    name="telephone"
-                    label="Telephone"
-                    value={values.telephone}
-                    onChange={(e) => setFieldValue("telephone", e)}
-                    fullWidth
-                    required
-                    onBlur={handleBlur}
-                    error={touched.telephone && errors.telephone}
-                    helperText={touched.telephone && errors.telephone}
-                  />
-                </div>
-              </div>
-
-              <div className="col-lg-6">
-                <div className="Homepage">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
-                  <MuiTelInput
-                    defaultCountry="DE"
-                    id="mobile"
-                    name="mobile"
-                    label="Mobile"
-                    forceCallingCode
-                    value={values.mobile}
-                    onChange={(e) => setFieldValue("mobile", e)}
-                    fullWidth
-                  />
-                </div>
-              </div>
+          <div className="col-lg-6">
+            <div className="Homepage">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
+              <MuiTelInput
+                defaultCountry="DE"
+                id="mobile"
+                name="mobile"
+                label="Mobile"
+                forceCallingCode
+                value={values.mobile}
+                onChange={(e) => setFieldValue("mobile", e)}
+                fullWidth
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="Telephone">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
-                  <MuiTelInput
-                    defaultCountry="DE"
-                    forceCallingCode
-                    id="fax"
-                    name="fax"
-                    label="Fax"
-                    value={values.fax}
-                    onChange={(e) => setFieldValue("fax", e)}
-                    fullWidth
-                  />
-                </div>
-              </div>
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="Telephone">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
+              <MuiTelInput
+                defaultCountry="DE"
+                forceCallingCode
+                id="fax"
+                name="fax"
+                label="Fax"
+                value={values.fax}
+                onChange={(e) => setFieldValue("fax", e)}
+                fullWidth
+              />
             </div>
-          </section>
+          </div>
+        </div>
+      </section>
 
-          {/* Address */}
+      {/* Address */}
 
-          <section>
-            <div className="Address mt-5">
-              <p>Address</p>
+      <section>
+        <div className="Address mt-5">
+          <p>Address</p>
+        </div>
+
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="Mail">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Country</p>
+              <FormControl
+                fullWidth
+                required
+                error={Boolean(touched.country && errors.country)}
+              >
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select
+                  id="country"
+                  name="country"
+                  labelId="country-label"
+                  label="Country"
+                  value={values.country}
+                  error={Boolean(touched.country && errors.country)}
+                  helperText={touched.country && errors.country}
+                  required
+                  onChange={(e) => {
+                    setFieldValue("country", e.target.value);
+                  }}
+                >
+                  {!!countriesArr?.length &&
+                    countriesArr.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
             </div>
-
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="Mail">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Country
-                  </p>
-                  <FormControl
-                    fullWidth
-                    required
-                    error={Boolean(touched.country && errors.country)}
-                  >
-                    <InputLabel id="country-label">Country</InputLabel>
-                    <Select
-                      id="country"
-                      name="country"
-                      labelId="country-label"
-                      label="Country"
-                      value={values.country}
-                      error={Boolean(touched.country && errors.country)}
-                      helperText={touched.country && errors.country}
-                      required
-                      onChange={(e) => {
-                        setFieldValue("country", e.target.value);
-                      }}
-                    >
-                      {!!countriesArr?.length &&
-                        countriesArr.map(({ label, value }) => (
-                          <MenuItem key={value} value={value}>
-                            {label}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="country">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
-                    {/* <Autocomplete
+          </div>
+          <div className="col-lg-6">
+            <div className="country">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>City</p>
+              {/* <Autocomplete
                       id="zipCity"
                       name="zipCity"
                       labelId="city-label"
@@ -682,69 +708,65 @@ export const Usermanagementcreate = (props) => {
                       renderOption={(option) => <div key={option.id}>{
                         option.key}</div>}
                     /> */}
-                    <Virtualize cities={cities}    onChange={handleCityChange} />
-                </div>
-              </div>
+              <Virtualize cities={cities} onChange={handleCityChange} />
             </div>
-
-            <div className="row mt-5">
-              <div className="col-lg-6">
-                <div className="ZIP / City">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Street No
-                  </p>
-
-                  <TextField
-                    fullWidth
-                    label="Street #"
-                    id="street_no"
-                    name="street_no"
-                    value={values.street_no}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={Boolean(touched.street_no && errors.street_no)}
-                    helperText={touched.street_no && errors.street_no}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="Street Number">
-                  <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                    Mailbox
-                  </p>
-
-                  <TextField
-                    fullWidth
-                    label="mailbox"
-                    id="mailbox"
-                    name="mailbox"
-                    value={values.mailbox}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div className="flex justify-between mt-5 mb -5">
-            <Button className="text-black" onClick={handleCancel}>
-              Cancel
-            </Button>
-
-            <Button
-              className="text-white"
-              style={{ backgroundColor: "#5A4A42" }}
-              onClick={() => {
-                if (props.editItem == undefined) {
-                  handleCreateUser();
-                  return;
-                }
-                handleSave();
-              }}
-            >
-              Save
-            </Button>
           </div>
         </div>
+
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="ZIP / City">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Street No</p>
+
+              <TextField
+                fullWidth
+                label="Street #"
+                id="street_no"
+                name="street_no"
+                value={values.street_no}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(touched.street_no && errors.street_no)}
+                helperText={touched.street_no && errors.street_no}
+              />
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className="Street Number">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mailbox</p>
+
+              <TextField
+                fullWidth
+                label="mailbox"
+                id="mailbox"
+                name="mailbox"
+                value={values.mailbox}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="flex justify-between mt-5 mb -5">
+        <Button className="text-black" onClick={handleCancel}>
+          Cancel
+        </Button>
+
+        <Button
+          className="text-white"
+          style={{ backgroundColor: "#5A4A42" }}
+          onClick={() => {
+            if (props.editItem == undefined) {
+              handleCreateUser();
+              return;
+            }
+            handleSave();
+          }}
+        >
+          Save
+        </Button>
+      </div>
+    </div>
   );
 };

@@ -33,7 +33,6 @@ const drawerWidth = 250;
 
 function Dashbaord(props) {
   const { getToken, token, logout, user } = AuthUser();
-
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElModal, setAnchorElModal] = React.useState(null);
@@ -107,14 +106,9 @@ function Dashbaord(props) {
   };
 
   function LinkTab(props) {
-    return (
-      <Tab
-        component={RouterLink}
-        {...props}
-      />
-    );
+    return <Tab component={RouterLink} {...props} />;
   }
-  
+
   // side bar
   const drawer = (
     <div className="">

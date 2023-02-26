@@ -24,9 +24,7 @@ function App() {
   return (
     <>
       <Routes>
-        {/* <Route path="/denied" element={<AccessDenied />} /> */}
-        {/* <Route path="/dashboard" element={<ProtectedRoutes roleRequired={"super-admin"} Component ={Dashbaord} /> } /> */}
-        <Route path="/" element={<RequireAuth />}>
+        <Route element={<RequireAuth />}>
           <Route path="/" element={<Dashboard />}>
             <Route path="dashboard" element={<MainDashboard />} />
             <Route path="companylist" element={<Companylist />} />
@@ -47,7 +45,7 @@ function App() {
             <Route path="users/edit/:id" element={<Usermanagementcreate />} />
           </Route>
         </Route>
-        <Route path="/address" render={() => <Addresses />} />
+        <Route path="/address" render={<Addresses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot" element={<Forgotpas />} />
         <Route path="/email" element={<Email />} />

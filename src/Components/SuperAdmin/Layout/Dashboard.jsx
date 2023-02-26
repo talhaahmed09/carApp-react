@@ -106,14 +106,9 @@ function Dashbaord(props) {
   };
 
   function LinkTab(props) {
-    return (
-      <Tab
-        component={RouterLink}
-        {...props}
-      />
-    );
+    return <Tab component={RouterLink} {...props} />;
   }
-  
+
   // side bar
   const drawer = (
     <div className="">

@@ -9,8 +9,8 @@ export const getUserDetails = (id) => {
   return get(`/user/${id}`);
 };
 
-export const deleteCompany = (id) => {
-  return remove(`user/${id}`);
+export const deleteUser = (id) => {
+  return post(`user/${id}`);
 };
 
 export const createUser = (values) => {

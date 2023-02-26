@@ -13,7 +13,7 @@ export const getCompanyDetail = (id) => {
 };
 
 export const deleteCompany = (id) => {
-  return remove(`company/${id}`);
+  return post(`company/${id}`);
 };
 
 export const updateCompany = (id, body) => {

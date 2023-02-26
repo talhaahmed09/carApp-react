@@ -25,6 +25,9 @@ import { FormLabel } from "react-bootstrap";
 import { Country, City } from "country-state-city";
 import { FixedSizeList } from 'react-window';
 import Virtualize from "./LargeDropDown";
+import { useParams, useNavigate } from "react-router";
+import { getUserDetails, updateUser } from "../../../../apis/user";
+import { getAllCompanies } from "../../../../apis/company";
 
 const ITEM_SIZE = 36;
 const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
@@ -47,9 +50,10 @@ const VirtualizedList = React.forwardRef(({ children, ...rest }, ref) => {
 const countriesObj = Country.getAllCountries();
 
 const getCities = (countryName) => {
-  const code = countriesObj.find((item) => {
+  const country = countriesObj.find((item) => {
     return item.name === countryName;
-  }).isoCode;
+  });
+  const code = country ? country.isoCode : "DE";
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -93,8 +97,10 @@ const validationSchema = Yup.object().shape({
 });
 
 export const Usermanagementcreate = (props) => {
+  const { id } = useParams();
   const { http } = AuthUser();
   const getToken = AuthUser();
+  const navigate = useNavigate(); 
 
   const listboxRef = React.useRef(null);
 
@@ -153,16 +159,38 @@ export const Usermanagementcreate = (props) => {
     setusermanagementCheck(true);
   };
 
+  const getUser = async () => {
+      const { objData: {content} } = await getUserDetails(id);
+      setValues({
+        salutation: content.salutation ? content.salutation : "",
+        title: content.title ? content.title : "",
+        first_name: content.first_name ? content.first_name : "",
+        last_name: content.last_name ? content.last_name : "",
+        birthday: content.birthday ? content.birthday : "",
+        password: content.password ? content.password : "",
+        active: content.active ? content.active : false,
+        email: content.email ? content.email : "",
+        role: content.role ? content.role : "",
+        homepage: content.homepage ? content.homepage : "",
+        company_id: content.company_id ? content.company_id : "",
+        telephone: content.telephone ? content.telephone : "",
+        mobile: content.mobile ? content.mobile : "",
+        fax: content.fax ? content.fax : "",
+        country: content.country ? content.country : "Germany",
+        mailbox: content.mailbox ? content.mailbox : "",
+        city: content.city ? content.city : "",
+        street_no: content.street_no ? content.street_no : "",
+      });
+  }
+
   // Handle Save
   const handleSave = (data) => {
-    const formData = new FormData();
     // console.log("companyid", companyid);
     // console.log("props", props.id);
 
     // If state is not empty then append state into formData otherwise append the props.editItem into formDate
 
-    http
-      .post(`/user/${props.editItem.id}`, formData)
+    updateUser(id, values)
       .then((res) => {
         console.log(res);
         toast.success("update succesfully");
@@ -198,12 +226,22 @@ export const Usermanagementcreate = (props) => {
   const fetchListCompany = async () => {
     // api call
 
-    let res = await http.get("/company");
-    setCompanylist(res.data.responseMessage);
+    let res = await getAllCompanies({size: 5, page: 1});
+    setCompanylist(res.objData.data);
   };
   React.useEffect(() => {
     fetchListCompany();
   }, []);
+
+  React.useEffect(() => {
+    getUser();
+    if (typeof content !== "undefined") {
+    
+    } else {
+      console.log("My prop is not present");
+    }
+  }, [props]);
+
 
   const handleCityChange = e => {
     console.log(e)
@@ -218,7 +256,7 @@ export const Usermanagementcreate = (props) => {
           <div className="flex justify-between items-center border-slate-400 ">
             <div className="flex items-center justify-center">
               <WestIcon
-                onClick={() => setusermanagementCheck(!usermanagementCheck)}
+                onClick={() => navigate(-1)}
                 className="backButton"
               />
               {props && props.editItem ? (
@@ -396,11 +434,14 @@ export const Usermanagementcreate = (props) => {
                     label="Last Name"
                     id="last_name"
                     name="last_name"
-                    values={values.last_name}
+                    value={values.last_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     error={touched.last_name && errors.last_name}
                     helperText={touched.last_name && errors.last_name}
+                    InputLabelProps={{
+                      shrink: values.last_name && values.last_name.length !== 0,
+                    }}
                   />
                 </div>
               </div>

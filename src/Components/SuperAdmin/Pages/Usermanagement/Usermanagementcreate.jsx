@@ -28,6 +28,7 @@ import Virtualize from "./LargeDropDown";
 import { useParams, useNavigate } from "react-router";
 import { getUserDetails, updateUser } from "../../../../apis/user";
 import { getAllCompanies } from "../../../../apis/company";
+import { intersection, isEmpty } from "lodash";
 
 const ITEM_SIZE = 36;
 const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
@@ -166,6 +167,7 @@ export const Usermanagementcreate = (props) => {
     const {
       objData: { content },
     } = await getUserDetails(id);
+    const role = intersection(content.myRole, ["expert", "clerk", "company-admin"]);
     setValues({
       salution: content.salution ? content.salution : "",
       title: content.title ? content.title : "",
@@ -175,7 +177,7 @@ export const Usermanagementcreate = (props) => {
       password: content.password ? content.password : "",
       active: content.active ? content.active : false,
       email: content.email ? content.email : "",
-      role: content.role ? content.role : "",
+      role: !isEmpty(role) ? role.pop() : "",
       homepage: content.homepage ? content.homepage : "",
       company_id: content.company_id ? content.company_id : "",
       telephone: content.telephone ? content.telephone : "",

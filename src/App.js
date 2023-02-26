@@ -2,23 +2,23 @@ import { Routes, Route, Link, Navigate } from "react-router-dom";
 import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ToastContainer } from "react-toastify";
-import Addresses from "./Components/SuperAdmin/Pages/Address/Addresses";
-import { Company as Companylist } from "./Components/SuperAdmin/Pages/Company/Company";
-import Vehicles from "./Components/SuperAdmin/Pages/Vehicles/Vehicles";
-import Login from "./Components/SuperAdmin/Pages/Login/Login";
-import Forgotpas from "./Components/SuperAdmin/Pages/Login/Forgotpas";
-import Email from "./Components/SuperAdmin/Pages/Email/Email";
-import Dashboard from "./Components/SuperAdmin/Layout/Dashboard";
-import { Createcompany } from "./Components/SuperAdmin/Pages/Company/Createcompany";
+const { ToastContainer } = React.lazy(() => import("react-toastify"));
+const Addresses = React.lazy(() => import("./Components/SuperAdmin/Pages/Address/Addresses"));
+const { Company: Companylist } = React.lazy(() => import("./Components/SuperAdmin/Pages/Company/Company"));
+const Vehicles = React.lazy(() => import("./Components/SuperAdmin/Pages/Vehicles/Vehicles"));
+const Login = React.lazy(() => import("./Components/SuperAdmin/Pages/Login/Login"));
+const Forgotpas = React.lazy(() => import("./Components/SuperAdmin/Pages/Login/Forgotpas"));
+const Email = React.lazy(() => import("./Components/SuperAdmin/Pages/Email/Email"));
+const Dashboard = React.lazy(() => import("./Components/SuperAdmin/Layout/Dashboard"));
+const { Createcompany } = React.lazy(() => import("./Components/SuperAdmin/Pages/Company/Createcompany"));
 
-import ProtectedRoutes from "./ProtectedRoute";
-import AccessDenied from "./Components/SuperAdmin/Pages/AccessDenied/AccessDenied";
-import AuthUser from "./Components/SuperAdmin/Auth/AuthUser";
-import Usermanagment from "./Components/SuperAdmin/Pages/Usermanagement/Usermanagment";
-import RequireAuth from "./Components/RequireAuth";
-import MainDashboard from "./Components/SuperAdmin/Pages/Dashboard/MainDashboard";
-import { Usermanagementcreate } from "./Components/SuperAdmin/Pages/Usermanagement/Usermanagementcreate";
+const ProtectedRoutes = React.lazy(() => import("./ProtectedRoute"));
+const AccessDenied = React.lazy(() => import("./Components/SuperAdmin/Pages/AccessDenied/AccessDenied"));
+const AuthUser = React.lazy(() => import("./Components/SuperAdmin/Auth/AuthUser"));
+const Usermanagment = React.lazy(() => import("./Components/SuperAdmin/Pages/Usermanagement/Usermanagment"));
+const RequireAuth = React.lazy(() => import("./Components/RequireAuth"));
+const MainDashboard = React.lazy(() => import("./Components/SuperAdmin/Pages/Dashboard/MainDashboard"));
+const { Usermanagementcreate } = React.lazy(() => import("./Components/SuperAdmin/Pages/Usermanagement/Usermanagementcreate"));
 
 function App() {
   return (

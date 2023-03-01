@@ -97,7 +97,7 @@ export function Company() {
     setLoading(true);
     let res;
     if(query !== null){
-      res = await search(query);
+      res = await search(query, params);
     } else {
       res = await getAllCompanies(params);
     }

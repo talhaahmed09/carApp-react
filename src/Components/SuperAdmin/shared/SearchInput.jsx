@@ -2,16 +2,16 @@ import * as React from "react";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
-export default function SearchInput({ onSearch }) {
+export default function SearchInput({ onSearch, formRef }) {
   return (
-    <form onSubmit={onSearch}>
+    <form ref={formRef} onSubmit={onSearch}>
       <TextField
         id="search-bar"
         className="text"
         onInput={(e) => {
           console.log(e.target.value);
         }}
-        name="query"
+        name="query"  
         label="Search"
         variant="outlined"
         placeholder="Search..."

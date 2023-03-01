@@ -21,6 +21,6 @@ export const updateUser = (id, body) => {
   return post(`user/${id}`, body);
 };
 
-export const searchUser = (query) => {
-  return get(`user/search?q=${query}`);
+export const searchUser = (query, { size, page }) => {
+  return get(`user/search?q=${query}&size=${size}&page=${page}`);
 }

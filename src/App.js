@@ -12,9 +12,6 @@ import Email from "./Components/SuperAdmin/Pages/Email/Email";
 import Dashboard from "./Components/SuperAdmin/Layout/Dashboard";
 import { Createcompany } from "./Components/SuperAdmin/Pages/Company/Createcompany";
 
-import ProtectedRoutes from "./ProtectedRoute";
-import AccessDenied from "./Components/SuperAdmin/Pages/AccessDenied/AccessDenied";
-import AuthUser from "./Components/SuperAdmin/Auth/AuthUser";
 import Usermanagment from "./Components/SuperAdmin/Pages/Usermanagement/Usermanagment";
 import RequireAuth from "./Components/RequireAuth";
 import MainDashboard from "./Components/SuperAdmin/Pages/Dashboard/MainDashboard";

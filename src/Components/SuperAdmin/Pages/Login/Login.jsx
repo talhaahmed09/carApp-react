@@ -30,6 +30,7 @@ const Login = () => {
       const res = await loginUser({ email, password });
       toast.success("login successfully");
       setToken(res.success.token, res.success.user);
+      setAuth({ token: res.success.token, user: res.success.user });
       navigate("/dashboard");
     } catch (error) {
       toast.error("Invalid email or password");

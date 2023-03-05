@@ -20,6 +20,6 @@ export const updateCompany = (id, body) => {
   return post(`company/${id}`, body);
 };
 
-export const searchCompany = (query) => {
-  return get(`company/search?query=${query}`);
+export const searchCompany = (query, { size, page }) => {
+  return get(`company/search?query=${query}&size=${size}&page=${page}`);
 }

@@ -1,5 +1,6 @@
 import * as React from "react";
 import Popover from "@mui/material/Popover";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import threedot from "../../img/3dot.png";
 import Dialog from "@mui/material/Dialog";
@@ -87,29 +88,29 @@ export default function SelectPopover(props) {
       {/* // dailog delete */}
 
       <Dialog
-        fullScreen={fullScreen}
         open={openDelete}
         onClose={handleCloseDelete}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogContent>
-          <div className="lg:absolute lg:top-[-40px] lg:left-[40%] flex justify-center">
-            <img src={delImg} alt="del" />
-          </div>
-          <div className="bg-white p-4 mt-4">
-            <h1 className="text-2xl">Are You Sure To Delete This Company?</h1>
-          </div>
-          <div className="flex justify-center">
-            <Button
-              autoFocus
-              onClick={handleCloseDelete}
-              className="text-black"
-            >
-              Cancel
-            </Button>
-
-            <CreateBtn onClick={handleDeleteAPI} name="Delete" />
-          </div>
+          <Box>
+            <div className="lg:absolute lg:top-[-40px] lg:left-[40%] flex justify-center">
+              <img src={delImg} alt="del" />
+            </div>
+            <div className="bg-white p-4 mt-4">
+              <h1 className="text-2xl">Are You Sure To Delete This Company?</h1>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                autoFocus
+                onClick={handleCloseDelete}
+                className="text-black"
+              >
+                Cancel
+              </Button>
+              <CreateBtn onClick={handleDeleteAPI} name="Delete" />
+            </div>
+          </Box>
         </DialogContent>
       </Dialog>
     </div>

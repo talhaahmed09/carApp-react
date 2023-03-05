@@ -1,7 +1,3 @@
-import axios from "axios";
-import { ERROR_MESSAGES } from "../../../utils/constant";
-import _isEmpty from "lodash/isEmpty";
-import { useState } from "react";
 import service from "../../../services/AuthService";
 
 export default function AuthUser() {
@@ -21,11 +17,13 @@ export default function AuthUser() {
     // navigate(`/dashboard`);
   };
   const logout = () => {
+    console.log("logout");
     localStorage.clear();
     window.location.replace(`/login`);
   };
   const error_callback = (error) => {
     if (error.response.status === 401) {
+      console.log("error", error.response.status);
       logout();
       return Promise.reject();
     }

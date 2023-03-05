@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import AuthUser from "./SuperAdmin/Auth/AuthUser";
+import useAuth from "../hooks/useAuth";
 
 const RequireAuth = (props) => {
-  const { user } = AuthUser();
+  const { auth } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
-    console.log(user);
+    console.log(auth.token);
   });
 
-  return user ? (
+  return auth.token ? (
     <Outlet />
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />

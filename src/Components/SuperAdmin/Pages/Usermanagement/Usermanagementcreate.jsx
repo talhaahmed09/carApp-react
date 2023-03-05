@@ -10,7 +10,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@mui/material";
 import Usermanagment from "./Usermanagment";
 import { Toolbar } from "@mui/material";
@@ -32,25 +32,6 @@ import { intersection, isEmpty } from "lodash";
 
 const ITEM_SIZE = 36;
 const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
-
-const VirtualizedList = React.forwardRef(({ children, ...rest }, ref) => {
-  const itemCount = children.length;
-  return (
-    <FixedSizeList
-      ref={ref}
-      {...rest}
-      height={LIST_HEIGHT}
-      itemSize={ITEM_SIZE}
-      itemCount={itemCount}
-    >
-      {({ index, style }) => (
-        <div style={style} key={index}>
-          {children[index]}
-        </div>
-      )}
-    </FixedSizeList>
-  );
-});
 
 const countriesObj = Country.getAllCountries();
 let isNewUser = true;
@@ -90,12 +71,13 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
+    company_id: Yup.string().required("Company is required"),
   }),
   country: Yup.string().required("Country is required"),
   city: Yup.string().required("City is required"),
   street_no: Yup.string().required("Street address is required"),
   role: Yup.string().required("Role is required"),
-  company_id: Yup.string().required("Company is required"),
+
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
@@ -167,7 +149,11 @@ export const Usermanagementcreate = (props) => {
     const {
       objData: { content },
     } = await getUserDetails(id);
-    const role = intersection(content.myRole, ["expert", "clerk", "company-admin"]);
+    const role = intersection(content.myRole, [
+      "expert",
+      "clerk",
+      "company-admin",
+    ]);
     setValues({
       salution: content.salution ? content.salution : "",
       title: content.title ? content.title : "",
@@ -188,7 +174,6 @@ export const Usermanagementcreate = (props) => {
       city: content.city ? content.city : "",
       street_no: content.street_no ? content.street_no : "",
     });
-    console.log(isNewUser);
     isNewUser = false;
   };
 
@@ -236,11 +221,11 @@ export const Usermanagementcreate = (props) => {
     let res = await getAllCompanies({ size: 5, page: 1 });
     setCompanylist(res.objData.data);
   };
-  React.useEffect(() => {
+  useEffect(() => {
     fetchListCompany();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getUser();
   }, [id]);
 
@@ -293,41 +278,42 @@ export const Usermanagementcreate = (props) => {
         <div className="generl">
           <p>General</p>
         </div>
-        <div className="row mt-5">
-          <div className="col-lg-12">
-            <div className="Street Number">
-              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Company</p>
-              <div className="w-[200px]">
-                <FormControl
-                  fullWidth
-                  error={touched.company_id && errors.company_id}
-                  helperText={touched.company_id && errors.company_id}
-                >
-                  <InputLabel id="demo-simple-select-label">
-                    Select Company
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Select Company"
-                    value={values.company_id}
-                    onChange={(e) =>
-                      setFieldValue("company_id", e.target.value)
-                    }
-                    onBlur={handleBlur}
+        {isNewUser && (
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="Street Number">
+                <p style={{ fontWeight: "bold", fontSize: "12px" }}>Company</p>
+                <div className="w-[200px]">
+                  <FormControl
+                    fullWidth
+                    error={touched.company_id && errors.company_id}
+                    helperText={touched.company_id && errors.company_id}
                   >
-                    {companylist.map(({ id, name }, index) => (
-                      <MenuItem key={index} value={id} name={name}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>
-                    {touched.company_id && errors.company_id}
-                  </FormHelperText>
-                </FormControl>
-              </div>
-              {/* <TextField
+                    <InputLabel id="demo-simple-select-label">
+                      Select Company
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Select Company"
+                      value={values.company_id}
+                      onChange={(e) =>
+                        setFieldValue("company_id", e.target.value)
+                      }
+                      onBlur={handleBlur}
+                    >
+                      {companylist.map(({ id, name }, index) => (
+                        <MenuItem key={index} value={id} name={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>
+                      {touched.company_id && errors.company_id}
+                    </FormHelperText>
+                  </FormControl>
+                </div>
+                {/* <TextField
                     fullWidth
                     label="company id"
                     id="Street No*"
@@ -338,9 +324,10 @@ export const Usermanagementcreate = (props) => {
                     }
                     onChange={(e) => setCompanyid(e.target.value)}
                   /> */}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="row mt-5">
           <div className="col-lg-6">
             <div className="managing">

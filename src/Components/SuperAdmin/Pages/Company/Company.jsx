@@ -86,22 +86,15 @@ export function Company() {
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState();
   const [count, setCount] = React.useState(0);
-  const queryForm = React.useRef(null)
 
-  const fetchListCompany = async (query=null) => {
+  const fetchListCompany = async () => {
     // api call
     const params = {
       page: controller.page + 1,
       size: controller.per_page,
     };
     setLoading(true);
-    let res;
-    if(query !== null){
-      res = await search(query, params);
-    } else {
-      res = await getAllCompanies(params);
-    }
-    const { objData } = res;
+    let { objData } = await getAllCompanies(params);
     setCompanylist(objData.data);
     setCount(objData.total);
     setLoading(false);
@@ -110,7 +103,11 @@ export function Company() {
   const searchCompany = async (e) => {
     e.preventDefault();
     const query = new FormData(e.target).get("query")
-    fetchListCompany(query);
+    setLoading(true);
+    let { objData } = await search(query);
+    setCompanylist(objData);
+    setCount(objData.length);
+    setLoading(false);
   }
 
   // pagination
@@ -125,11 +122,6 @@ export function Company() {
   };
 
   React.useEffect(() => {
-    const query = new FormData(queryForm.current)?.get("query")
-    if(query && query.length !== 0){
-      fetchListCompany(query);
-      return;
-    }
     fetchListCompany();
   }, [controller]);
   // const _DATA = usePagination(companylist, rowsPerPage);
@@ -155,7 +147,7 @@ export function Company() {
         <div className="flex justify-between">
           <h1 className="text-base text-bold mb-0 ml-5">List of Company</h1>
           <div className="mr-5 flex justify-between gap-2">
-            <form onSubmit={searchCompany} ref={queryForm}>
+            <form onSubmit={searchCompany}>
               <TextField
                 id="search-bar"
                 className="text"

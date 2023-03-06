@@ -237,7 +237,6 @@ export const Usermanagementcreate = (props) => {
   return (
     <div>
       <Toolbar />
-
       <div className="flex justify-between items-center border-slate-400 ">
         <div className="flex items-center justify-center">
           <WestIcon onClick={() => navigate(-1)} className="backButton" />
@@ -744,7 +743,7 @@ export const Usermanagementcreate = (props) => {
           className="text-white"
           style={{ backgroundColor: "#5A4A42" }}
           onClick={() => {
-            if (props.editItem == undefined) {
+            if (id == undefined) {
               handleCreateUser();
               return;
             }

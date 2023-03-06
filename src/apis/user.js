@@ -1,5 +1,5 @@
 import { remove } from "lodash";
-import { get, post } from "../http_request";
+import { get, post, put } from "../http_request";
 
 export const getAllUsers = ({ size, page }) => {
   return get(`user?size=${size}&page=${page}`);
@@ -18,7 +18,7 @@ export const createUser = (values) => {
 };
 
 export const updateUser = (id, body) => {
-  return post(`user/${id}`, body);
+  return put(`user/${id}`, body);
 };
 
 export const searchUser = (query, { size, page }) => {

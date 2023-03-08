@@ -16,6 +16,8 @@ import Usermanagment from "./Components/SuperAdmin/Pages/Usermanagement/Usermana
 import RequireAuth from "./Components/RequireAuth";
 import MainDashboard from "./Components/SuperAdmin/Pages/Dashboard/MainDashboard";
 import { Usermanagementcreate } from "./Components/SuperAdmin/Pages/Usermanagement/Usermanagementcreate";
+import Fdm from "./Components/SuperAdmin/Pages/FDM/Fdm";
+import SettingsRoot from "./Components/SuperAdmin/Pages/Settings/SettingsRoot";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
               element={<Createcompany edit={true} />}
             />
             <Route path="vehicles" element={<Vehicles />} />
+            <Route path="fdm" element={<Fdm />} />
+            <Route path="settings" element={<SettingsRoot />} />
             <Route path="createcompany" element={<Createcompany />} />
             <Route path="users" element={<Usermanagment />} />
             <Route path="users/create" element={<Usermanagementcreate />} />

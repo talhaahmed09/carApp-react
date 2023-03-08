@@ -165,17 +165,20 @@ function Dashbaord(props) {
             {...a11yProps(3)}
             style={{ display: "flex", alignItems: "start" }}
           />
-          <Tab
+          <LinkTab
+            to="/fdm"
             label="File/dossier Management"
             {...a11yProps(4)}
             style={{ display: "flex", alignItems: "start" }}
           />
-          <Tab
+          <LinkTab
+            to="/address"
             label="Address Management"
             {...a11yProps(5)}
             style={{ display: "flex", alignItems: "start" }}
           />
-          <Tab
+          <LinkTab
+            to="/settings"
             label="Settings"
             {...a11yProps(6)}
             style={{ display: "flex", alignItems: "start" }}

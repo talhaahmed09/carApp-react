@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -12,7 +11,6 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@mui/material";
-import Usermanagment from "./Usermanagment";
 import { Toolbar } from "@mui/material";
 import AuthUser from "../../Auth/AuthUser";
 import WestIcon from "@mui/icons-material/West";
@@ -23,7 +21,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FormLabel } from "react-bootstrap";
 import { Country, City } from "country-state-city";
-import { FixedSizeList } from "react-window";
 import Virtualize from "./LargeDropDown";
 import { useParams, useNavigate } from "react-router";
 import { createUser, getUserDetails, updateUser } from "../../../../apis/user";
@@ -179,9 +176,6 @@ export const Usermanagementcreate = (props) => {
 
   // Handle Save
   const handleSave = (data) => {
-    // console.log("companyid", companyid);
-    // console.log("props", props.id);
-
     // If state is not empty then append state into formData otherwise append the props.editItem into formDate
 
     updateUser(id, values)
@@ -744,7 +738,7 @@ export const Usermanagementcreate = (props) => {
           className="text-white"
           style={{ backgroundColor: "#5A4A42" }}
           onClick={() => {
-            if (props.editItem == undefined) {
+            if (id) {
               handleCreateUser();
               return;
             }

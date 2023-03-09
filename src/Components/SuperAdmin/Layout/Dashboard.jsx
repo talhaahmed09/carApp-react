@@ -49,7 +49,7 @@ function Dashbaord(props) {
   const logoutUser = () => {
     // eslint-disable-next-line eqeqeq
     if (token != undefined) {
-      setAuth({});
+      // setAuth({});
       logout();
     }
   };

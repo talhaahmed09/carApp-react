@@ -30,11 +30,12 @@ import AuthUser from "../Auth/AuthUser";
 import Login from "../Pages/Login/Login";
 import { useContext } from "react";
 import AuthContext from "../../../context/AuthProvider";
+import useAuth from "../../../hooks/useAuth";
 
 const drawerWidth = 250;
 
 function Dashbaord(props) {
-  const { setAuth } = useContext(AuthContext);
+  const { setAuth } = useAuth();
   const { getToken, token, logout, user } = AuthUser();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -49,7 +50,7 @@ function Dashbaord(props) {
   const logoutUser = () => {
     // eslint-disable-next-line eqeqeq
     if (token != undefined) {
-      // setAuth({});
+      setAuth({});
       logout();
     }
   };

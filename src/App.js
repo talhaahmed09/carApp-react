@@ -23,7 +23,7 @@ function App() {
   return (
     <>
       <Routes>
-        {/* <Route element={<RequireAuth />}> */}
+        <Route element={<RequireAuth />}>
         <Route path="/" element={<Dashboard />}>
           <Route path="dashboard" element={<MainDashboard />} />
           <Route path="companylist" element={<Companylist />} />
@@ -45,7 +45,7 @@ function App() {
           <Route path="users/create" element={<Usermanagementcreate />} />
           <Route path="users/edit/:id" element={<Usermanagementcreate />} />
         </Route>
-        {/* </Route> */}
+        </Route>
         <Route path="/address" render={<Addresses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot" element={<Forgotpas />} />

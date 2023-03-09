@@ -14,7 +14,7 @@ import { loginUser } from "../../../../apis/auth";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setAuth } = useAuth();
+  const {setAuth} = useAuth();
   const { http, setToken } = AuthUser();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();
@@ -30,13 +30,14 @@ const Login = () => {
       const res = await loginUser({ email, password });
       toast.success("login successfully");
       setToken(res.success.token, res.success.user);
-      // setAuth({ token: res.success.token, user: res.success.user });
+      setAuth({ token: res.success.token, user: res.success.user });
       navigate("/dashboard");
     } catch (error) {
+      console.error(error);
       toast.error("Invalid email or password");
-      if (error.response.status === 401) {
-        setMsg("Unauthorized");
-      }
+      // if (res.status === 401) {
+      //   setMsg("Unauthorized");
+      // }
     } finally {
       setLoading(false);
     }

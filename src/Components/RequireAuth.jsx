@@ -6,10 +6,6 @@ const RequireAuth = (props) => {
   const { auth } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    console.log(auth.token);
-  });
-
   return auth.token ? (
     <Outlet />
   ) : (

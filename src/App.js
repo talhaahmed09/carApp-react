@@ -24,27 +24,27 @@ function App() {
     <>
       <Routes>
         {/* <Route element={<RequireAuth />}> */}
-          <Route path="/" element={<Dashboard />}>
-            <Route path="dashboard" element={<MainDashboard />} />
-            <Route path="companylist" element={<Companylist />} />
-            <Route
-              exact
-              path="company/create"
-              element={<Createcompany edit={false} />}
-            />
-            <Route
-              exact
-              path="company/edit/:id"
-              element={<Createcompany edit={true} />}
-            />
-            <Route path="vehicles" element={<Vehicles />} />
-            <Route path="fdm" element={<Fdm />} />
-            <Route path="settings" element={<SettingsRoot />} />
-            <Route path="createcompany" element={<Createcompany />} />
-            <Route path="users" element={<Usermanagment />} />
-            <Route path="users/create" element={<Usermanagementcreate />} />
-            <Route path="users/edit/:id" element={<Usermanagementcreate />} />
-          </Route>
+        <Route path="/" element={<Dashboard />}>
+          <Route path="dashboard" element={<MainDashboard />} />
+          <Route path="companylist" element={<Companylist />} />
+          <Route
+            exact
+            path="company/create"
+            element={<Createcompany edit={false} />}
+          />
+          <Route
+            exact
+            path="company/edit/:id"
+            element={<Createcompany edit={true} />}
+          />
+          <Route path="vehicles" element={<Vehicles />} />
+          <Route path="fdm" element={<Fdm />} />
+          <Route path="settings" element={<SettingsRoot />} />
+          <Route path="createcompany" element={<Createcompany />} />
+          <Route path="users" element={<Usermanagment />} />
+          <Route path="users/create" element={<Usermanagementcreate />} />
+          <Route path="users/edit/:id" element={<Usermanagementcreate />} />
+        </Route>
         {/* </Route> */}
         <Route path="/address" render={<Addresses />} />
         <Route path="/login" element={<Login />} />

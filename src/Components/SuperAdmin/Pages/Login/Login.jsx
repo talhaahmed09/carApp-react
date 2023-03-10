@@ -5,17 +5,13 @@ import "../../SuperAdmin.css";
 import LockIcon from "@mui/icons-material/Lock";
 import EmailIcon from "@mui/icons-material/Email";
 import { useNavigate, Link } from "react-router-dom";
-import AuthUser from "../../Auth/AuthUser";
-import { Alert, Backdrop, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
-import { post } from "../../../../http_request";
-import useAuth from "../../../../hooks/useAuth";
-import { loginUser } from "../../../../apis/auth";
+import { useAuth } from "../../../../context/AuthProvider";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setAuth } = useAuth();
-  const { http, setToken } = AuthUser();
+  const { logIn, isLoggedIn } = useAuth();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();
   const [msgErr, setMsg] = React.useState(null);
@@ -27,11 +23,13 @@ const Login = () => {
     // api call
 
     try {
-      const res = await loginUser({ email, password });
+      const data = await logIn({ email, password });
+
       toast.success("login successfully");
-      setToken(res.success.token, res.success.user);
-      // setAuth({ token: res.success.token, user: res.success.user });
-      navigate("/dashboard");
+      if (isLoggedIn) {
+        console.log(isLoggedIn);
+        navigate("/dashboard");
+      }
     } catch (error) {
       toast.error("Invalid email or password");
       if (error.response.status === 401) {

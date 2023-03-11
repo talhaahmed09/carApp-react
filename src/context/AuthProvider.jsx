@@ -9,23 +9,27 @@ const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const [isLoggedIn, setisLoggedIn] = useLocalStorage("isLoggedIn", null);
   const [user, setUser] = useLocalStorage("user", null);
+  const [token, setToken] = useLocalStorage("token", null);
   const navigate = useNavigate();
 
   const logIn = async (userInfo) => {
     dispatch({
       type: "SET_LOGIN",
     });
-    const data = await loginUser(userInfo);
-    if (data) {
+    const {
+      success: { token, user },
+    } = await loginUser(userInfo);
+    if (token) {
       setisLoggedIn(true);
-      setUser(data);
+      setUser(user);
+      setToken(token);
       await dispatch({
         type: "SET_LOGIN_SUCCESS",
         payload: {
           user: user,
         },
       });
-      return data;
+      return { token, user };
     } else {
       return dispatch({
         type: "SET_LOGIN_ERROR",
@@ -34,8 +38,9 @@ const AuthProvider = ({ children }) => {
   };
 
   const logOut = () => {
-    setisLoggedIn(null);
+    setisLoggedIn(false);
     setUser(null);
+    setToken(null);
     dispatch({
       type: "LOG_OUT",
     });

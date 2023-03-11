@@ -23,11 +23,10 @@ const Login = () => {
     // api call
 
     try {
-      const data = await logIn({ email, password });
+      await logIn({ email, password });
 
       toast.success("login successfully");
       if (isLoggedIn) {
-        console.log(isLoggedIn);
         navigate("/dashboard");
       }
     } catch (error) {

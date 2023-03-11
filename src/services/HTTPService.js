@@ -7,10 +7,10 @@ const httpService = function (token = null) {
   });
   service.interceptors.request.use(
     (config) => {
-      if (token !== null && typeof token === 'string') {
+      if (token) {
         config.headers["Authorization"] = "Bearer " + token;
       }
-      config.headers['Accept'] = 'application/json';
+      config.headers["Accept"] = "application/json";
       return config;
     },
     (error) => {

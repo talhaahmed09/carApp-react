@@ -11,7 +11,7 @@ import { useAuth } from "../../../../context/AuthProvider";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { logIn, isLoggedIn } = useAuth();
+  const { state, logIn, isLoggedIn } = useAuth();
   const [email, setEmail] = React.useState();
   const [password, setPass] = React.useState();
   const [msgErr, setMsg] = React.useState(null);
@@ -23,10 +23,10 @@ const Login = () => {
     // api call
 
     try {
-      await logIn({ email, password });
+      const res = await logIn({ email, password });
 
       toast.success("login successfully");
-      if (isLoggedIn) {
+      if (res.user) {
         navigate("/dashboard");
       }
     } catch (error) {

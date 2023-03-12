@@ -89,6 +89,8 @@ export function Company() {
 
   const fetchListCompany = async () => {
     // api call
+    const token = JSON.parse(localStorage.getItem("token"));
+    console.log(token)
     const params = {
       page: controller.page + 1,
       size: controller.per_page,

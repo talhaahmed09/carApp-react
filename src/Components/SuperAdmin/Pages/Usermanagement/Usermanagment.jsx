@@ -70,7 +70,7 @@ export default function Usermanagment() {
   const fetchListCompany = async () => {
     // api call
 
-    let res = await getAllCompanies();
+    let res = await getAllCompanies({size: 100, page: 1});
     if (!res.objData) {
       setCompanylist(res.objData.data);
     } else {

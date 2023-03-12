@@ -111,11 +111,7 @@ export function Company() {
   const searchCompany = async (e) => {
     e.preventDefault();
     const query = new FormData(e.target).get("query")
-    setLoading(true);
-    let { objData } = await search(query);
-    setCompanylist(objData);
-    setCount(objData.length);
-    setLoading(false);
+    fetchListCompany(query);
   }
 
   // pagination

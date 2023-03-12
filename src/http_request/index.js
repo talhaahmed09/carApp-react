@@ -1,6 +1,15 @@
-import AuthUser from "../Components/SuperAdmin/Auth/AuthUser";
+import service from "../services/AuthService";
 
-const { httpService } = AuthUser();
+const error_callback = (error) => {
+  if (error.response.status === 401) {
+    console.log("error", error.response.status);
+    localStorage.clear();
+    window.location.replace(`/login`);
+    return Promise.reject();
+  }
+};
+const token = JSON.parse(localStorage.getItem("token"));
+const httpService = service(token, error_callback);
 
 export const post = (url, body, headers = {}, ifScheduleTask = false) => {
   return httpService({

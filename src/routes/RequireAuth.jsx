@@ -1,16 +1,20 @@
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAuth } from "../context/AuthProvider";
 
-const RequireAuth = (props) => {
-  const { auth } = useAuth();
+const PrivateRoutes = () => {
+  const { isLoggedIn } = useAuth();
   const location = useLocation();
 
-  return auth.token ? (
+  useEffect(() => {
+    console.log(isLoggedIn);
+  });
+
+  return isLoggedIn ? (
     <Outlet />
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />
   );
 };
 
-export default RequireAuth;
+export default PrivateRoutes;

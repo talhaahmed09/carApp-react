@@ -26,17 +26,13 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import logo from "../../img/Oldtimer coach.png";
 import BasicPopover from "../BasicPopover";
-import AuthUser from "../Auth/AuthUser";
-import Login from "../Pages/Login/Login";
-import { useContext } from "react";
-import AuthContext from "../../../context/AuthProvider";
+import { useAuth } from "../../../context/AuthProvider";
 
 const drawerWidth = 250;
 
 function Dashbaord(props) {
-  const { setAuth } = useContext(AuthContext);
-  const { getToken, token, logout, user } = AuthUser();
   const { window } = props;
+  const { userInfo, logOut } = useAuth();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElModal, setAnchorElModal] = React.useState(null);
   const open = Boolean(anchorElModal);
@@ -47,11 +43,7 @@ function Dashbaord(props) {
     setAnchorElModal(null);
   };
   const logoutUser = () => {
-    // eslint-disable-next-line eqeqeq
-    if (token != undefined) {
-      // setAuth({});
-      logout();
-    }
+    logOut();
   };
 
   const handleDrawerToggle = () => {
@@ -285,7 +277,7 @@ function Dashbaord(props) {
                     onClick={handleClickModal}
                   >
                     <h5 className="text-base text-neutral-800 mb-0 ml-3">
-                      {user.myRole[0]} <ExpandMoreIcon />
+                      {userInfo} <ExpandMoreIcon />
                     </h5>
                   </Button>
                   <Menu

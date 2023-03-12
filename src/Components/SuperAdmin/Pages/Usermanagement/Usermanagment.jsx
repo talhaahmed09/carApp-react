@@ -34,15 +34,21 @@ export default function Usermanagment() {
     page: 0,
     per_page: 5,
   });
+  const queryForm = React.useRef(null);
 
-  const fetchListUser = async (data) => {
+  const fetchListUser = async (query) => {
     // api call
     setLoading(true);
     const params = {
       page: controller.page + 1,
       size: controller.per_page,
     };
-    let res = await getAllUsers(params);
+    let res;
+    if(query !== null){
+      res = await search(query, params);
+    } else {
+      res = await getAllUsers(params);
+    }
     if (res.objData) {
       setUserList(res.objData.data);
       setCount(res.objData.total);
@@ -52,6 +58,11 @@ export default function Usermanagment() {
   };
   // console.log("Userlist:", Userlist[0].first_name);
   React.useEffect(() => {
+    const query = new FormData(queryForm.current)?.get("query")
+    if(query && query.length !== 0){
+      fetchListUser(query);
+      return;
+    }
     fetchListUser();
   }, [controller]);
   const [companylist, setCompanylist] = React.useState([]);
@@ -75,11 +86,7 @@ export default function Usermanagment() {
   const searchUser = async (e) => {
     e.preventDefault();
     const query = new FormData(e.target).get("query")
-    setLoading(true);
-    let { objData } = await search(query);
-    setUserList(objData);
-    setCount(objData.length);
-    setLoading(false);
+    fetchListUser(query);
   }
 
   const handleEdit = (id) => {
@@ -109,7 +116,7 @@ export default function Usermanagment() {
             List Of Experts And Clerks
           </h1>
           <div className="mr-5 flex justify-between gap-2">
-            <SearchInput onSearch={searchUser} />
+            <SearchInput formRef={queryForm} onSearch={searchUser} />
             <CreateBtn
               name="Create "
               icon={<AddIcon />}

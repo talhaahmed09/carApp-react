@@ -87,7 +87,7 @@ export function Company() {
   const [editItem, setEditItem] = useState();
   const [count, setCount] = React.useState(0);
 
-  const fetchListCompany = async () => {
+  const fetchListCompany = async (query=null) => {
     // api call
     const token = JSON.parse(localStorage.getItem("token"));
     console.log(token)
@@ -96,7 +96,13 @@ export function Company() {
       size: controller.per_page,
     };
     setLoading(true);
-    let { objData } = await getAllCompanies(params);
+    let res;
+    if(query !== null){
+      res = await search(query, params);
+    } else {
+      res = await getAllCompanies(params);
+    }
+    const { objData } = res;
     setCompanylist(objData.data);
     setCount(objData.total);
     setLoading(false);

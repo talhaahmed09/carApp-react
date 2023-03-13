@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import FormControl from "@mui/material/FormControl";
 import { useNavigate, useParams } from "react-router";
 import { get } from "../../../../http_request";
-import { createCompany, getCompanyDetail } from "../../../../apis/company";
+import { createCompany, getCompanyDetail, updateCompany } from "../../../../apis/company";
 
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
@@ -63,12 +63,13 @@ export const Createcompany = (props) => {
     return { label: country.name, value: country.name };
   });
 
-  const [company, setCompany] = useState([]);
+  const [company, setCompany] = useState(false);
 
   const getCompanyDetails = async () => {
     const {
       objData: { content },
     } = await getCompanyDetail(id);
+    setCompany(true)
     setValues({
       name: content.name,
       director: content.director,
@@ -84,11 +85,10 @@ export const Createcompany = (props) => {
       city: content.zipCity,
       street_no: content.streetNo,
     });
-    setCompany(content);
   };
 
   useEffect(() => {
-    if (props.edit) {
+    if (id) {
       getCompanyDetails();
     }
     if (typeof content !== "undefined") {
@@ -97,7 +97,6 @@ export const Createcompany = (props) => {
     }
   }, [props]);
 
-  const [companyCheck, setCompanyCheck] = useState(false);
   const initialValues = {
     name: "",
     director: "",
@@ -143,48 +142,44 @@ export const Createcompany = (props) => {
       ),
     });
     if (!isValid) {
-      // toast.error(errors)
+      toast.error('Please fill required fields')
     }
-    const res = await createCompany(values);
-    if (res) {
-      navigate("/companyList");
+    try {
+      const res = await createCompany(values);
+      if (res) {
+        toast.success("Company Created Successfully");
+        navigate("/companyList");
+      }
+    } catch (error) {
+      toast.error("Error", error.message);
     }
   };
   const handleCancel = () => {
-    setCompanyCheck(!companyCheck);
+  return  navigate('/companylist')
   };
 
-  // Handle Create company
-
-  // Handle Edit Company
-  const handleEditCompany = () => {
-    // http
-    //   .post(`company/${content.id}`, values)
-    //   .then((res) => {
-    //     toast.success("update successfully");
-    //     setCompanyCheck(!companyCheck);
-    //   })
-    //   .catch((err) => toast.error(err.message));
+  const handleEditCompany = async () => {
+   try {
+    const res = await updateCompany(id,values)
+    if (res) {
+      toast.success("Company Edited Successfully");
+      navigate("/companyList");
+    }
+   } catch (error) {
+    toast.error("Error", error.message);
+   }
   };
 
   return (
     <>
-      {companyCheck ? (
-        <Company />
-      ) : (
         <div>
           <Toolbar />
 
           <div className="flex border-slate-400 ">
             <WestIcon
-              onClick={() => setCompanyCheck(!companyCheck)}
+              onClick={handleCancel}
               className="backButton"
             />
-            {company ? (
-              <h1 className="text-base text-bold mb-0 ml-5">{company.name}</h1>
-            ) : (
-              <h1 className="text-base text-bold mb-0 ml-5">Create Company</h1>
-            )}
           </div>
 
           <hr />
@@ -552,7 +547,6 @@ export const Createcompany = (props) => {
             </Button>
           </div>
         </div>
-      )}
     </>
   );
 };

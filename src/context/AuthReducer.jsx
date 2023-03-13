@@ -9,14 +9,12 @@ const authReducer = (state, action) => {
 
   switch (type) {
     case "SET_LOGIN":
-      console.log("log-start", payload);
       return {
         ...state,
         isLoading: true,
       };
 
     case "SET_LOGIN_SUCCESS":
-      console.log("logged-in", payload);
       return {
         ...state,
         user: payload.user,
@@ -25,7 +23,6 @@ const authReducer = (state, action) => {
       };
 
     case "SET_LOGIN_ERROR":
-      console.log("logged-error", payload);
       return {
         ...state,
         isLoggedIn: false,
@@ -34,7 +31,6 @@ const authReducer = (state, action) => {
       };
 
     case "LOG_OUT":
-      console.log("logged-out", payload);
       return {
         ...state,
         user: {},

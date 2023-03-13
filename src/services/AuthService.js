@@ -1,8 +1,8 @@
 import httpService from "./HTTPService";
 import _isEmpty from "lodash/isEmpty";
 import { ERROR_MESSAGES } from "../utils/constant";
-const service = function (token, error_callback) {
-  const authService = httpService(token);
+const service = function ( error_callback) {
+  const authService = httpService();
   // response interceptor
   authService.interceptors.response.use(
     (response) => {

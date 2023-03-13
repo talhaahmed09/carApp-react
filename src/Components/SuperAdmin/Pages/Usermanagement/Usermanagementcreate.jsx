@@ -137,18 +137,19 @@ export const Usermanagementcreate = (props) => {
     return cities;
   }, [values.country]);
 
-  const [usermanagementCheck, setusermanagementCheck] = useState(false);
+  const [userManagementCheck, setuserManagementCheck] = useState(false);
   // console.log("create props : ", props);
   // Handle Cancel Button
 
   const handleCancel = () => {
-    setusermanagementCheck(true);
+    navigate('/users')
   };
 
   const getUser = async () => {
     const {
       objData: { content },
     } = await getUserDetails(id);
+      setuserManagementCheck(true)
     const role = intersection(content.myRole, [
       "expert",
       "clerk",
@@ -183,14 +184,24 @@ export const Usermanagementcreate = (props) => {
     // console.log("props", props.id);
 
     // If state is not empty then append state into formData otherwise append the props.editItem into formDate
-
+    setTouched({
+      ...Object.keys(initialValues).reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      ),
+    });
+    if (!isValid) {
+      toast.error('Please fill required fields')
+    }
+    
     updateUser(id, values)
       .then((res) => {
         console.log(res);
         toast.success("update succesfully");
-        setusermanagementCheck(!usermanagementCheck);
+        setuserManagementCheck(!userManagementCheck);
+        navigate('/users')
       })
-      .catch((err) => toast.error(err.message));
+      .catch((err) => toast.error('Error', err.message));
   };
 
   // Handle Create New Uuser
@@ -202,15 +213,15 @@ export const Usermanagementcreate = (props) => {
       ),
     });
     if (!isValid) {
-      console.log(values);
-      return console.log("Hello dumb mf");
+      toast.error('Please fill required fields')
     }
     // console.log("companyid", companyid);
     // const formData = new FormData();
     createUser(values)
       .then((res) => {
         toast.success("create succesfully");
-        setusermanagementCheck(!usermanagementCheck);
+        setuserManagementCheck(!userManagementCheck);
+        navigate('/users')
       })
       .catch((err) => toast.error(err.message));
   };
@@ -240,9 +251,9 @@ export const Usermanagementcreate = (props) => {
       <div className="flex justify-between items-center border-slate-400 ">
         <div className="flex items-center justify-center">
           <WestIcon onClick={() => navigate(-1)} className="backButton" />
-          {props && props.editItem ? (
+          {userManagementCheck ? (
             <h1 className="text-base text-bold mb-0 ml-5">
-              {props.editItem.first_name} {props.editItem.last_name}
+              Edit User
             </h1>
           ) : (
             <h1 className="text-base text-bold mb-0 ml-5">Create User</h1>

@@ -24,7 +24,10 @@ import { CreateBtn } from "../../../Buttons";
 import { Createcompany } from "./Createcompany";
 import { Pageloader } from "../Page loader/Pageloader";
 import SelectPopover from "../SelectPopover";
-import { getAllCompanies, searchCompany as search } from "../../../../apis/company";
+import {
+  getAllCompanies,
+  searchCompany as search,
+} from "../../../../apis/company";
 import { Link, useNavigate } from "react-router-dom";
 
 function TablePaginationActions(props) {
@@ -87,7 +90,7 @@ export function Company() {
   const [editItem, setEditItem] = useState();
   const [count, setCount] = React.useState(0);
 
-  const fetchListCompany = async (query=null) => {
+  const fetchListCompany = async (query = null) => {
     // api call
     const params = {
       page: controller.page + 1,
@@ -95,7 +98,7 @@ export function Company() {
     };
     setLoading(true);
     let res;
-    if(query !== null){
+    if (query !== null) {
       res = await search(query, params);
     } else {
       res = await getAllCompanies(params);
@@ -108,9 +111,9 @@ export function Company() {
 
   const searchCompany = async (e) => {
     e.preventDefault();
-    const query = new FormData(e.target).get("query")
+    const query = new FormData(e.target).get("query");
     fetchListCompany(query);
-  }
+  };
 
   // pagination
   let [controller, setController] = useState({
@@ -162,12 +165,13 @@ export function Company() {
                 placeholder="Search..."
                 size="small"
                 InputProps={{
-                endAdornment:
-                  (<InputAdornment>
-                    <IconButton type="submit" aria-label="search">
-                      <Search style={{ fill: "blue" }} />
-                    </IconButton>
-                  </InputAdornment>)
+                  endAdornment: (
+                    <InputAdornment>
+                      <IconButton type="submit" aria-label="search">
+                        <Search style={{ fill: "blue" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
             </form>

@@ -88,8 +88,9 @@ export const Createcompany = (props) => {
       fax: content.fax,
       country: content.country,
       city: content.city,
-      street_no: content.streetNo,
+      street_no: content.street_no,
       zip: content.zip,
+      mailbox: content.mailbox,
     });
   };
 
@@ -556,7 +557,7 @@ export const Createcompany = (props) => {
             className="text-white"
             style={{ backgroundColor: "#5A4A42" }}
             onClick={() => {
-              if (company !== undefined) {
+              if (id) {
                 handleEditCompany();
               }
               handleSave();

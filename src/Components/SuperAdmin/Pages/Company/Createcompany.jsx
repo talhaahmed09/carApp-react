@@ -53,7 +53,7 @@ const formValidationSchema = Yup.object().shape({
   city: Yup.string().required("City is required"),
   street_no: Yup.string().required("Street is required"),
   homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
-  zipCode: Yup.string()
+  zip: Yup.string()
     .test("isValidZipCode", "Please enter a valid German zip code", (value) => {
       return validate(value);
     })
@@ -523,6 +523,9 @@ export const Createcompany = (props) => {
                 error={Boolean(touched.mailbox && errors.mailbox)}
                 helperText={touched.mailbox && errors.mailbox}
                 label="Enter your mail box"
+                InputLabelProps={{
+                  shrink: values.mailbox
+                }}
               />
             </div>
           </div>

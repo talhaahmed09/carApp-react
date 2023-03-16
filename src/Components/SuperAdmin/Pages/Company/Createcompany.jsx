@@ -5,7 +5,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { validate } from "german-zip-codes";
 import { Toolbar } from "@mui/material";
@@ -24,10 +24,11 @@ import {
   getCompanyDetail,
   updateCompany,
 } from "../../../../apis/company";
-
+import { postcodeValidator } from 'postcode-validator';
 const countriesObj = Country.getAllCountries();
 const getCities = (countryName) => {
   const code = countryName !== undefined ? countryName : "DE";
+  
   const cities = City.getCitiesOfCountry(code);
   return cities.map((city) => {
     return { label: city.name, value: city.name };
@@ -54,9 +55,13 @@ const formValidationSchema = Yup.object().shape({
   street_no: Yup.string().required("Street is required"),
   homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
   zip: Yup.string()
-    .test("isValidZipCode", "Please enter a valid German zip code", (value) => {
-      return validate(value);
-    })
+    .test( 'valid-zipcode',
+    '${value} is not a valid ziptcode for the selected country',
+    function (value) {
+      const { country } = this.parent;
+      return postcodeValidator(value, country);
+    }
+  )
     .required("Zip code is required"),
 });
 
@@ -111,8 +116,8 @@ export const Createcompany = (props) => {
     phone: "",
     mobile: "",
     fax: "",
-    country: "Germany",
-    city: "Aach",
+    country: "DE",
+    city: "",
     zip: "",
     street_no: "",
   };
@@ -135,10 +140,13 @@ export const Createcompany = (props) => {
   const cities = useMemo(() => {
     const cities = getCities(values.country);
     values.city = cities[0] ? cities[0].value : "";
-    console.log(values.country);
-    setSelectedCountry(values.country);
+
     return cities;
   }, [values.country]);
+
+  useEffect(() => {
+    setSelectedCountry(values.country);
+  }, [values.country])
   // Handle Cancel Button
   const handleSave = async () => {
     setTouched({
@@ -148,7 +156,7 @@ export const Createcompany = (props) => {
       ),
     });
     if (!isValid) {
-      toast.error("Please fill required fields");
+   return   toast.error("Please fill required fields");
     }
     try {
       const res = await createCompany(values);
@@ -157,7 +165,7 @@ export const Createcompany = (props) => {
         navigate("/companyList");
       }
     } catch (error) {
-      toast.error("Error", error.message);
+      toast.error(error.message);
     }
   };
   const handleCancel = () => {

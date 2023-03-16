@@ -27,7 +27,7 @@ function App() {
       <Routes>
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Dashboard />}>
-            <Route path="dashboard" element={<MainDashboard />} />
+            <Route index path="dashboard" element={<MainDashboard />} />
             <Route path="companylist" element={<Companylist />} />
             <Route
               exact

@@ -29,6 +29,7 @@ import { useParams, useNavigate } from "react-router";
 import { createUser, getUserDetails, updateUser } from "../../../../apis/user";
 import { getAllCompanies } from "../../../../apis/company";
 import { intersection, isEmpty } from "lodash";
+import { postcodeValidator } from "postcode-validator";
 
 const ITEM_SIZE = 36;
 const LIST_HEIGHT = ITEM_SIZE * 8; // Show 8 items at a time
@@ -83,16 +84,26 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
   homepage: Yup.string().test("is-valid-url", "Not a valid URL", isValidUrl),
   telephone: Yup.string().required("Telephone Number is required"),
+  zip: Yup.string()
+    .test( 'valid-zipcode',
+    '${value} is not a valid ziptcode for the selected country',
+    function (value) {
+      const { country } = this.parent;
+      return postcodeValidator(value, country);
+    }
+  )
+    .required("Zip code is required"),
 });
 
 export const Usermanagementcreate = (props) => {
   const { id } = useParams();
-  const { http } = AuthUser();
   const navigate = useNavigate();
 
   const countriesArr = countriesObj.map((country) => {
     return { label: country.name, value: country.name };
   });
+
+  const [selectedCountry, setSelectedCountry] = useState("DE");
 
   const initialValues = {
     salution: "",
@@ -110,10 +121,11 @@ export const Usermanagementcreate = (props) => {
     telephone: "",
     mobile: "",
     fax: "",
-    country: "Germany",
+    country: "DE",
     mailbox: "",
     city: "",
     street_no: "",
+    zip: ""
   };
 
   const {
@@ -133,9 +145,14 @@ export const Usermanagementcreate = (props) => {
 
   const cities = useMemo(() => {
     const cities = getCities(values.country);
+    
     values.city = cities[0] ? cities[0].value : "";
     return cities;
   }, [values.country]);
+
+  useEffect(() => {
+    setSelectedCountry(values.country);
+  }, [values.country])
 
   const [userManagementCheck, setuserManagementCheck] = useState(false);
   // console.log("create props : ", props);
@@ -170,10 +187,11 @@ export const Usermanagementcreate = (props) => {
       telephone: content.telephone ? content.telephone : "",
       mobile: content.mobile ? content.mobile : "",
       fax: content.fax ? content.fax : "",
-      country: content.country ? content.country : "Germany",
+      country: content.country ? content.country : "DE",
       mailbox: content.mailbox ? content.mailbox : "",
       city: content.city ? content.city : "",
       street_no: content.street_no ? content.street_no : "",
+      zip: content.zip,
     });
     isNewUser = false;
   };
@@ -583,7 +601,7 @@ export const Usermanagementcreate = (props) => {
               <p style={{ fontWeight: "bold", fontSize: "12px" }}>Telephone</p>
 
               <MuiTelInput
-                defaultCountry="DE"
+                defaultCountry={selectedCountry}
                 forceCallingCode
                 id="telephone"
                 name="telephone"
@@ -603,7 +621,7 @@ export const Usermanagementcreate = (props) => {
             <div className="Homepage">
               <p style={{ fontWeight: "bold", fontSize: "12px" }}>Mobile</p>
               <MuiTelInput
-                defaultCountry="DE"
+               defaultCountry={selectedCountry}
                 id="mobile"
                 name="mobile"
                 label="Mobile"
@@ -621,7 +639,7 @@ export const Usermanagementcreate = (props) => {
             <div className="Telephone">
               <p style={{ fontWeight: "bold", fontSize: "12px" }}>Fax</p>
               <MuiTelInput
-                defaultCountry="DE"
+               defaultCountry={selectedCountry}
                 forceCallingCode
                 id="fax"
                 name="fax"

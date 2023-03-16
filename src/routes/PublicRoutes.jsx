@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthProvider";
 const PublicRoutes = () => {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
-  const from = location?.state?.from?.pathname || "/";
+  const from = location?.state?.from?.pathname || "/dashboard";
   return isLoggedIn ? <Navigate to={from} /> : <Outlet />;
 };
 

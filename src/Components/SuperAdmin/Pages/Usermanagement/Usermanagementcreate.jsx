@@ -761,6 +761,25 @@ export const Usermanagementcreate = (props) => {
             </div>
           </div>
         </div>
+        <div className="row mt-5">
+          <div className="col-lg-6">
+            <div className="Homepage">
+              <p style={{ fontWeight: "bold", fontSize: "12px" }}>Zip *</p>
+
+              <TextField
+                id="zip"
+                name="zip"
+                value={values.zip}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.zip && Boolean(errors.zip)}
+                helperText={touched.zip && errors.zip}
+                fullWidth
+                label="Zip"
+              />
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="flex justify-between mt-5 mb -5">

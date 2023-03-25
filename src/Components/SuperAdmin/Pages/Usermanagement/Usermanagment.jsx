@@ -36,7 +36,7 @@ export default function Usermanagment() {
   });
   const queryForm = React.useRef(null);
 
-  const fetchListUser = async (query) => {
+  const fetchListUser = async (query=null) => {
     // api call
     setLoading(true);
     const params = {

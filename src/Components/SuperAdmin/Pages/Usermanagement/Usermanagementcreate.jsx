@@ -192,6 +192,7 @@ export const Usermanagementcreate = (props) => {
       city: content.city ? content.city : "",
       street_no: content.street_no ? content.street_no : "",
       zip: content.zipcode ? content.zipcode : "",
+      status: content.status === "1" ? 1 : 0,
     });
     isNewUser = false;
   };
@@ -478,7 +479,7 @@ export const Usermanagementcreate = (props) => {
                 row
                 aria-labelledby="demo-row-radio-buttons-group-label"
                 name="row-radio-buttons-group"
-                value={values.active}
+                value={values.status}
                 onChange={(e) => {
                   setFieldValue("active", e.target.value);
                 }}
@@ -487,12 +488,12 @@ export const Usermanagementcreate = (props) => {
                 helperText={touched.active && errors.active}
               >
                 <FormControlLabel
-                  value="option1"
+                  value="1"
                   control={<Radio />}
                   label="Active"
                 />
                 <FormControlLabel
-                  value="option2"
+                  value="0"
                   control={<Radio />}
                   label="Not Active"
                 />

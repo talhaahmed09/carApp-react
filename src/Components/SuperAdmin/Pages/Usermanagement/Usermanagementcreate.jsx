@@ -191,7 +191,7 @@ export const Usermanagementcreate = (props) => {
       mailbox: content.mailbox ? content.mailbox : "",
       city: content.city ? content.city : "",
       street_no: content.street_no ? content.street_no : "",
-      zip: content.zip,
+      zip: content.zipcode ? content.zipcode : "",
     });
     isNewUser = false;
   };

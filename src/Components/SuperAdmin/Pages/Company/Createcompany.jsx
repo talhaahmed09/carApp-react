@@ -94,7 +94,7 @@ export const Createcompany = (props) => {
       country: content.country,
       city: content.city,
       street_no: content.street_no,
-      zip: content.zip,
+      zip: content.zipcode,
       mailbox: content.mailbox,
     });
   };
@@ -570,8 +570,9 @@ export const Createcompany = (props) => {
             onClick={() => {
               if (id) {
                 handleEditCompany();
+              } else{
+                handleSave();
               }
-              handleSave();
             }}
           >
             Save

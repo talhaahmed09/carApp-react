@@ -1,4 +1,4 @@
-import { get, post, remove } from "../http_request";
+import { get, post, put, remove } from "../http_request";
 
 export const getAllCompanies = ({ size, page }) => {
   return get(`company?size=${size}&page=${page}`);
@@ -17,7 +17,7 @@ export const deleteCompany = (id) => {
 };
 
 export const updateCompany = (id, body) => {
-  return post(`company/${id}`, body);
+  return put(`company/${id}`, body);
 };
 
 export const searchCompany = (query, { size, page }) => {

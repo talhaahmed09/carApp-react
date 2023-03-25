@@ -481,7 +481,7 @@ export const Usermanagementcreate = (props) => {
                 name="row-radio-buttons-group"
                 value={values.status}
                 onChange={(e) => {
-                  setFieldValue("active", e.target.value);
+                  setFieldValue("status", e.target.value);
                 }}
                 onBlur={handleBlur}
                 error={touched.active && errors.active}
@@ -768,8 +768,8 @@ export const Usermanagementcreate = (props) => {
               <p style={{ fontWeight: "bold", fontSize: "12px" }}>Zip *</p>
 
               <TextField
-                id="zip"
-                name="zip"
+                id="zipcode"
+                name="zipcode"
                 value={values.zip}
                 onChange={handleChange}
                 onBlur={handleBlur}
